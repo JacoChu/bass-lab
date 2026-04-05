@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Bass 網關 - 終極高品質音樂模式</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #eee; text-align: center; padding: 20px; }
+        .box { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 30px; border-radius: 20px; border: 1px solid #333; }
+        #visualizer { width: 100%; height: 120px; background: #000; border: 1px solid #00d1b2; margin: 15px 0; border-radius: 8px; }
+        button { width: 100%; padding: 16px; margin: 10px 0; font-size: 18px; cursor: pointer; border-radius: 12px; border: none; font-weight: bold; transition: 0.2s; }
+        #startBtn { background: #00d1b2; color: white; }
+        #recordBtn { background: #ff3860; color: white; display: none; }
+        #stopBtn { background: #3273dc; color: white; display: none; }
+        #logBox { background: #000; color: #00ff00; font-family: monospace; font-size: 11px; text-align: left; padding: 12px; height: 120px; overflow-y: auto; margin-top: 15px; border-radius: 8px; border: 1px solid #222; }
+        .download-link { display: block; margin-top: 20px; padding: 15px; background: #48c774; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>🎸 Bass 網關 (大師模式)</h1>
+    <p style="color: #888; font-size: 12px;">強制 128kbps Opus 音樂編碼</p>
+
+    <canvas id="visualizer"></canvas>
+    <div id="status" style="color:#ffdd57; margin-bottom: 10px;">準備就緒</div>
+
+    <button id="startBtn" onclick="handleStart()">1. 啟動高品質連線</button>
+    <button id="recordBtn" onclick="handleRecord()">2. 開始錄製回傳訊號</button>
+    <button id="stopBtn" onclick="handleStop()">3. 停止並下載</button>
+
+    <audio id="remoteAudio" autoplay controls style="display:none"></audio>
+    <div id="resultArea"></div>
+    <div id="logBox"></div>
+</div>
+
+<script>
+    let pc, audioCtx, remoteStream = new MediaStream(), mediaRecorder, audioChunks = [];
+    let analyser, dataArray;
+
+    const log = (msg) => {
+        const lb = document.getElementById('logBox');
+        lb.innerHTML += `> ${msg}<br>`;
+        lb.scrollTop = lb.scrollHeight;
+    };
+
+    // 修改 SDP 強制開啟高品質音樂模式
+    function modifySDP(sdp) {
+        return sdp.replace('useinbandfec=1', 'useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=128000;minptime=10');
+    }
+
+    async function handleStart() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
+        pc = new RTCPeerConnection();
+
+        pc.ontrack = (event) => {
+            log("✅ 收到 Go 回傳軌道");
+            remoteStream.addTrack(event.track);
+            document.getElementById('remoteAudio').srcObject = remoteStream;
+
+            // 連結視覺化與監聽
+            const source = audioCtx.createMediaStreamSource(remoteStream);
+            source.connect(audioCtx.destination); // 強制監聽
+            setupVisualizer(source);
+        };
+
+        try {
+            log("正在獲取 SSL 2 訊號...");
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 2 }
+            });
+
+            // --- L3 混音與增益 ---
+            const source = audioCtx.createMediaStreamSource(stream);
+            const splitter = audioCtx.createChannelSplitter(2);
+            const merger = audioCtx.createChannelMerger(2);
+            const gainNode = audioCtx.createGain();
+
+            source.connect(splitter);
+            splitter.connect(merger, 0, 0); // Input 1 -> 左
+            splitter.connect(merger, 0, 1); // Input 1 -> 右 (解決單聲道問題)
+
+            gainNode.gain.value = 5.0; // 放大 5 倍確保 Opus 喚醒
+            merger.connect(gainNode);
+
+            const dest = audioCtx.createMediaStreamDestination();
+            gainNode.connect(dest);
+            dest.stream.getTracks().forEach(t => pc.addTrack(t, dest.stream));
+            log("🚀 高品質前級已掛載");
+
+            // WebRTC 握手與 SDP 修正
+            const offer = await pc.createOffer();
+            const modifiedOffer = new RTCSessionDescription({ type: 'offer', sdp: modifySDP(offer.sdp) });
+            await pc.setLocalDescription(modifiedOffer);
+
+            const res = await fetch('http://localhost:8080/offer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pc.localDescription)
+            });
+            const answer = await res.json();
+            await pc.setRemoteDescription(answer);
+
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('recordBtn').style.display = 'block';
+            document.getElementById('status').innerText = "🟢 已連線：請觀察波形";
+        } catch (e) { log("❌: " + e.message); }
+    }
+
+    function setupVisualizer(source) {
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d');
+
+        function draw() {
+            requestAnimationFrame(draw);
+            analyser.getByteFrequencyData(dataArray);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const barWidth = (canvas.width / dataArray.length) * 2.5;
+            let x = 0;
+            dataArray.forEach(val => {
+                ctx.fillStyle = `rgb(0, 209, 178)`;
+                ctx.fillRect(x, canvas.height - val/1.5, barWidth, val/1.5);
+                x += barWidth + 1;
+            });
+        }
+        draw();
+    }
+
+    function handleRecord() {
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(remoteStream, { mimeType: 'audio/webm;codecs=opus' });
+        mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+                audioChunks.push(e.data);
+                log(`錄製數據中... (${Math.round(e.data.size/1024)} KB)`);
+            }
+        };
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+            const url = URL.createObjectURL(blob);
+            document.getElementById('resultArea').innerHTML = `<a href="${url}" download="bass_session.webm" class="download-link">💾 下載 Bass 錄音檔 (請用 Chrome 播放)</a>`;
+            log(`✅ 生成成功: ${Math.round(blob.size/1024)} KB`);
+        };
+        mediaRecorder.start(500);
+        document.getElementById('recordBtn').style.display = 'none';
+        document.getElementById('stopBtn').style.display = 'block';
+    }
+
+    function handleStop() {
+        mediaRecorder.stop();
+        document.getElementById('stopBtn').style.display = 'none';
+        document.getElementById('recordBtn').style.display = 'block';
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Rails 8, Ruby 3.4.2, PostgreSQL 17, Go + Pion (media server), React SPA (Vite + TypeScript)
+  Domain: Real-time video collaboration platform for musicians
+
+  Git workflow:
+  - Every task must be committed individually after completion
+  - Use Conventional Commits format: feat:, fix:, chore:, refactor:
+  - Scope by service when applicable: feat(media-server):, feat(frontend):
+  - Push to GitHub after each commit
+
+rules:
+  tasks:
+    - Each task must end with a git commit message suggestion in the format: git commit `<type>(<scope>): <description>`
+    - Upload to GitHub (git push) after every commit
