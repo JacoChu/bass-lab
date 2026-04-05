@@ -312,3 +312,354 @@ ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific
 Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
 Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
 Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Started GET "/admin/admin_users" for ::1 at 2026-04-05 20:36:56 +0800
+Processing by Admin::AdminUsersController#index as HTML
+  Rendering text template
+  Rendered text template (Duration: 0.0ms | GC: 0.0ms)
+Filter chain halted as :authenticate_admin! rendered or redirected
+Completed 403 Forbidden in 1ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2026-04-05 20:36:57 +0800
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Started GET "/users/sign_in%EF%BC%88%E7%94%A8%E9%80%99%E5%80%8B" for ::1 at 2026-04-05 20:37:46 +0800
+  [1m[36mActiveRecord::SchemaMigration Load (1.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  
+ActionController::RoutingError (No route matches [GET] "/users/sign_in%EF%BC%88%E7%94%A8%E9%80%99%E5%80%8B"):
+  
+Started GET "/users/sign_in" for ::1 at 2026-04-05 20:37:49 +0800
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/devise-5.0.3/app/views/devise/sessions/new.html.erb within layouts/application
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/devise-5.0.3/app/views/devise/shared/_links.html.erb (Duration: 0.7ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/devise-5.0.3/app/views/devise/sessions/new.html.erb within layouts/application (Duration: 7.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 33.5ms | GC: 16.9ms)
+Completed 200 OK in 78ms (Views: 38.0ms | ActiveRecord: 14.1ms (0 queries, 0 cached) | GC: 16.9ms)
+
+
+Started POST "/users/sign_in" for ::1 at 2026-04-05 20:38:05 +0800
+Processing by Devise::SessionsController#create as HTML
+  Parameters: {"authenticity_token" => "[FILTERED]", "user" => {"email" => "admin@basslab.dev", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "登入"}
+  [1m[36mUser Load (6.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@basslab.dev"], ["LIMIT", 1]]
+Redirected to http://localhost:3000/
+Completed 303 See Other in 300ms (ActiveRecord: 6.2ms (1 query, 0 cached) | GC: 5.8ms)
+
+
+Started GET "/" for ::1 at 2026-04-05 20:38:06 +0800
+Redirected to http://localhost:3000/admin
+Completed 301 Moved Permanently in 0ms
+
+
+Started GET "/admin" for ::1 at 2026-04-05 20:38:06 +0800
+Processing by Admin::UsersController#index as HTML
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/admin/application_controller.rb:12:in 'Admin::ApplicationController#authenticate_admin!'
+  Rendering layout /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/layouts/administrate/application.html.erb
+  Rendering /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/index.html.erb within layouts/administrate/application
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_search.html.erb (Duration: 0.9ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_index_header.html.erb (Duration: 2.4ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_collection_header_actions.html.erb (Duration: 0.2ms | GC: 0.0ms)
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" LIMIT $1 OFFSET $2[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/fields/number/_index.html.erb (Duration: 0.2ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/fields/string/_index.html.erb (Duration: 0.1ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/fields/string/_index.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/fields/string/_index.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_collection_item_actions.html.erb (Duration: 0.8ms | GC: 0.2ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_collection.html.erb (Duration: 6.5ms | GC: 0.4ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_pagination.html.erb (Duration: 1.3ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/index.html.erb within layouts/administrate/application (Duration: 12.4ms | GC: 0.4ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_stylesheet.html.erb (Duration: 0.6ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_javascript.html.erb (Duration: 2.5ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_icons.html.erb (Duration: 0.2ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/administrate/application/_navigation.html.erb (Duration: 5.5ms | GC: 0.0ms)
+  Rendered layout /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/administrate-1.0.0/app/views/layouts/administrate/application.html.erb (Duration: 24.8ms | GC: 1.2ms)
+Completed 500 Internal Server Error in 46ms (ActiveRecord: 1.0ms (2 queries, 0 cached) | GC: 2.0ms)
+
+
+  
+ActionView::Template::Error (uninitialized constant AdminUser)
+Caused by: NameError (uninitialized constant AdminUser)
+
+Information for: ActionView::Template::Error (uninitialized constant AdminUser):
+    15:       display_resource_name(resource),
+    16:       resource_index_route(resource),
+    17:       class: "navigation__link navigation__link--#{nav_link_state(resource)}"
+    18:     ) if accessible_action?(model_from_resource(resource), :index) %>
+    19:   <% end %>
+    20: </nav>
+  
+activesupport (8.1.3) lib/active_support/inflector/methods.rb:290:in 'ActiveSupport::Inflector#constantize'
+activesupport (8.1.3) lib/active_support/core_ext/string/inflections.rb:74:in 'String#constantize'
+administrate (1.0.0) lib/administrate/base_dashboard.rb:26:in 'Administrate::BaseDashboard.model'
+activesupport (8.1.3) lib/active_support/core_ext/object/try.rb:15:in 'Kernel#public_send'
+activesupport (8.1.3) lib/active_support/core_ext/object/try.rb:15:in 'ActiveSupport::Tryable#try'
+administrate (1.0.0) app/helpers/administrate/application_helper.rb:33:in 'Administrate::ApplicationHelper#model_from_resource'
+administrate (1.0.0) app/views/administrate/application/_navigation.html.erb:18
+administrate (1.0.0) app/views/administrate/application/_navigation.html.erb:13:in 'Array#each'
+administrate (1.0.0) app/views/administrate/application/_navigation.html.erb:13
+actionview (8.1.3) lib/action_view/base.rb:281:in 'Kernel#public_send'
+actionview (8.1.3) lib/action_view/base.rb:281:in 'ActionView::Base#_run'
+actionview (8.1.3) lib/action_view/template.rb:284:in 'block in ActionView::Template#render'
+activesupport (8.1.3) lib/active_support/notifications.rb:212:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/template.rb:589:in 'ActionView::Template#instrument_render_template'
+actionview (8.1.3) lib/action_view/template.rb:272:in 'ActionView::Template#render'
+actionview (8.1.3) lib/action_view/renderer/partial_renderer.rb:268:in 'block in ActionView::PartialRenderer#render_partial_template'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (8.1.3) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/renderer/partial_renderer.rb:262:in 'ActionView::PartialRenderer#render_partial_template'
+actionview (8.1.3) lib/action_view/renderer/partial_renderer.rb:253:in 'ActionView::PartialRenderer#render'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:78:in 'ActionView::Renderer#render_partial_to_object'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:49:in 'ActionView::Renderer#render_partial'
+actionview (8.1.3) lib/action_view/helpers/rendering_helper.rb:152:in 'ActionView::Helpers::RenderingHelper#render'
+administrate (1.0.0) app/views/layouts/administrate/application.html.erb:33
+actionview (8.1.3) lib/action_view/base.rb:281:in 'Kernel#public_send'
+actionview (8.1.3) lib/action_view/base.rb:281:in 'ActionView::Base#_run'
+actionview (8.1.3) lib/action_view/template.rb:284:in 'block in ActionView::Template#render'
+activesupport (8.1.3) lib/active_support/notifications.rb:212:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/template.rb:589:in 'ActionView::Template#instrument_render_template'
+actionview (8.1.3) lib/action_view/template.rb:272:in 'ActionView::Template#render'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:77:in 'block in ActionView::TemplateRenderer#render_with_layout'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (8.1.3) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:75:in 'ActionView::TemplateRenderer#render_with_layout'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:59:in 'ActionView::TemplateRenderer#render_template'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:11:in 'ActionView::TemplateRenderer#render'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:58:in 'ActionView::Renderer#render_template_to_object'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:31:in 'ActionView::Renderer#render_to_object'
+actionview (8.1.3) lib/action_view/rendering.rb:136:in 'block in ActionView::Rendering#_render_template'
+actionview (8.1.3) lib/action_view/base.rb:308:in 'ActionView::Base#in_rendering_context'
+actionview (8.1.3) lib/action_view/rendering.rb:135:in 'ActionView::Rendering#_render_template'
+actionpack (8.1.3) lib/action_controller/metal/streaming.rb:179:in 'ActionController::Streaming#_render_template'
+actionview (8.1.3) lib/action_view/rendering.rb:122:in 'ActionView::Rendering#render_to_body'
+actionpack (8.1.3) lib/action_controller/metal/rendering.rb:192:in 'ActionController::Rendering#render_to_body'
+actionpack (8.1.3) lib/action_controller/metal/renderers.rb:155:in 'ActionController::Renderers#render_to_body'
+actionpack (8.1.3) lib/abstract_controller/rendering.rb:28:in 'AbstractController::Rendering#render'
+actionpack (8.1.3) lib/action_controller/metal/rendering.rb:173:in 'ActionController::Rendering#render'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:31:in 'block (2 levels) in ActionController::Instrumentation#render'
+activesupport (8.1.3) lib/active_support/benchmark.rb:17:in 'ActiveSupport::Benchmark.realtime'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:31:in 'block in ActionController::Instrumentation#render'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:100:in 'ActionController::Instrumentation#cleanup_view_runtime'
+activerecord (8.1.3) lib/active_record/railties/controller_runtime.rb:48:in 'ActiveRecord::Railties::ControllerRuntime#cleanup_view_runtime'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:30:in 'ActionController::Instrumentation#render'
+administrate (1.0.0) app/controllers/administrate/application_controller.rb:15:in 'Administrate::ApplicationController#index'
+actionpack (8.1.3) lib/action_controller/metal/basic_implicit_render.rb:8:in 'ActionController::BasicImplicitRender#send_action'
+actionpack (8.1.3) lib/abstract_controller/base.rb:221:in 'AbstractController::Base#process_action'
+actionpack (8.1.3) lib/action_controller/metal/rendering.rb:199:in 'ActionController::Rendering#process_action'
+actionpack (8.1.3) lib/abstract_controller/callbacks.rb:267:in 'block in AbstractController::Callbacks#process_action'
+activesupport (8.1.3) lib/active_support/callbacks.rb:121:in 'block in ActiveSupport::Callbacks#run_callbacks'
+actiontext (8.1.3) lib/action_text/rendering.rb:24:in 'ActionText::Rendering::ClassMethods#with_renderer'
+actiontext (8.1.3) lib/action_text/engine.rb:72:in 'block (4 levels) in <class:Engine>'
+activesupport (8.1.3) lib/active_support/callbacks.rb:130:in 'BasicObject#instance_exec'
+activesupport (8.1.3) lib/active_support/callbacks.rb:130:in 'block in ActiveSupport::Callbacks#run_callbacks'
+activesupport (8.1.3) lib/active_support/callbacks.rb:141:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.1.3) lib/abstract_controller/callbacks.rb:266:in 'AbstractController::Callbacks#process_action'
+actionpack (8.1.3) lib/action_controller/metal/rescue.rb:36:in 'ActionController::Rescue#process_action'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:76:in 'block in ActionController::Instrumentation#process_action'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (8.1.3) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:75:in 'ActionController::Instrumentation#process_action'
+actionpack (8.1.3) lib/action_controller/metal/params_wrapper.rb:259:in 'ActionController::ParamsWrapper#process_action'
+activerecord (8.1.3) lib/active_record/railties/controller_runtime.rb:39:in 'ActiveRecord::Railties::ControllerRuntime#process_action'
+actionpack (8.1.3) lib/abstract_controller/base.rb:154:in 'AbstractController::Base#process'
+actionview (8.1.3) lib/action_view/rendering.rb:40:in 'ActionView::Rendering#process'
+actionpack (8.1.3) lib/action_controller/metal.rb:252:in 'ActionController::Metal#dispatch'
+actionpack (8.1.3) lib/action_controller/metal.rb:335:in 'ActionController::Metal.dispatch'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:65:in 'ActionDispatch::Routing::RouteSet::Dispatcher#dispatch'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:50:in 'ActionDispatch::Routing::RouteSet::Dispatcher#serve'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:35:in 'block in ActionDispatch::Journey::Router#serve'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:86:in 'block in ActionDispatch::Journey::Router#recognize'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:66:in 'Array#each'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:66:in 'ActionDispatch::Journey::Router#recognize'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:31:in 'ActionDispatch::Journey::Router#serve'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:906:in 'ActionDispatch::Routing::RouteSet#call'
+railties (8.1.3) lib/rails/engine/lazy_route_set.rb:60:in 'Rails::Engine::LazyRouteSet#call'
+warden (1.2.9) lib/warden/manager.rb:36:in 'block in Warden::Manager#call'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Kernel#catch'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Warden::Manager#call'
+rack (3.2.6) lib/rack/tempfile_reaper.rb:20:in 'Rack::TempfileReaper#call'
+rack (3.2.6) lib/rack/etag.rb:29:in 'Rack::ETag#call'
+rack (3.2.6) lib/rack/conditional_get.rb:31:in 'Rack::ConditionalGet#call'
+rack (3.2.6) lib/rack/head.rb:15:in 'Rack::Head#call'
+actionpack (8.1.3) lib/action_dispatch/http/content_security_policy.rb:38:in 'ActionDispatch::ContentSecurityPolicy::Middleware#call'
+rack-session (2.1.1) lib/rack/session/abstract/id.rb:274:in 'Rack::Session::Abstract::Persisted#context'
+rack-session (2.1.1) lib/rack/session/abstract/id.rb:268:in 'Rack::Session::Abstract::Persisted#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/cookies.rb:708:in 'ActionDispatch::Cookies#call'
+activerecord (8.1.3) lib/active_record/migration.rb:671:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (8.1.3) lib/active_support/callbacks.rb:101:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.1.3) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/executor.rb:20:in 'ActionDispatch::Executor#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+web-console (4.3.0) lib/web_console/middleware.rb:132:in 'WebConsole::Middleware#call_app'
+web-console (4.3.0) lib/web_console/middleware.rb:28:in 'block in WebConsole::Middleware#call'
+web-console (4.3.0) lib/web_console/middleware.rb:17:in 'Kernel#catch'
+web-console (4.3.0) lib/web_console/middleware.rb:17:in 'WebConsole::Middleware#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (8.1.3) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (8.1.3) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/remote_ip.rb:98:in 'ActionDispatch::RemoteIp#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/request_id.rb:34:in 'ActionDispatch::RequestId#call'
+rack (3.2.6) lib/rack/method_override.rb:28:in 'Rack::MethodOverride#call'
+rack (3.2.6) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+activesupport (8.1.3) lib/active_support/cache/strategy/local_cache_middleware.rb:30:in 'ActiveSupport::Cache::Strategy::LocalCache::Middleware#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/executor.rb:20:in 'ActionDispatch::Executor#call'
+propshaft (1.3.1) lib/propshaft/server.rb:37:in 'Propshaft::Server#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.2.6) lib/rack/sendfile.rb:131:in 'Rack::Sendfile#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/host_authorization.rb:143:in 'ActionDispatch::HostAuthorization#call'
+railties (8.1.3) lib/rails/engine.rb:534:in 'Rails::Engine#call'
+puma (7.2.0) lib/puma/configuration.rb:296:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (7.2.0) lib/puma/request.rb:103:in 'block in Puma::Request#handle_request'
+puma (7.2.0) lib/puma/thread_pool.rb:355:in 'Puma::ThreadPool#with_force_shutdown'
+puma (7.2.0) lib/puma/request.rb:102:in 'Puma::Request#handle_request'
+puma (7.2.0) lib/puma/server.rb:503:in 'Puma::Server#process_client'
+puma (7.2.0) lib/puma/server.rb:262:in 'block in Puma::Server#run'
+puma (7.2.0) lib/puma/thread_pool.rb:182:in 'block in Puma::ThreadPool#spawn_thread'
+
+Information for cause: NameError (uninitialized constant AdminUser):
+  
+activesupport (8.1.3) lib/active_support/inflector/methods.rb:290:in 'ActiveSupport::Inflector#constantize'
+activesupport (8.1.3) lib/active_support/core_ext/string/inflections.rb:74:in 'String#constantize'
+administrate (1.0.0) lib/administrate/base_dashboard.rb:26:in 'Administrate::BaseDashboard.model'
+activesupport (8.1.3) lib/active_support/core_ext/object/try.rb:15:in 'Kernel#public_send'
+activesupport (8.1.3) lib/active_support/core_ext/object/try.rb:15:in 'ActiveSupport::Tryable#try'
+administrate (1.0.0) app/helpers/administrate/application_helper.rb:33:in 'Administrate::ApplicationHelper#model_from_resource'
+administrate (1.0.0) app/views/administrate/application/_navigation.html.erb:18
+administrate (1.0.0) app/views/administrate/application/_navigation.html.erb:13:in 'Array#each'
+administrate (1.0.0) app/views/administrate/application/_navigation.html.erb:13
+actionview (8.1.3) lib/action_view/base.rb:281:in 'Kernel#public_send'
+actionview (8.1.3) lib/action_view/base.rb:281:in 'ActionView::Base#_run'
+actionview (8.1.3) lib/action_view/template.rb:284:in 'block in ActionView::Template#render'
+activesupport (8.1.3) lib/active_support/notifications.rb:212:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/template.rb:589:in 'ActionView::Template#instrument_render_template'
+actionview (8.1.3) lib/action_view/template.rb:272:in 'ActionView::Template#render'
+actionview (8.1.3) lib/action_view/renderer/partial_renderer.rb:268:in 'block in ActionView::PartialRenderer#render_partial_template'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (8.1.3) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/renderer/partial_renderer.rb:262:in 'ActionView::PartialRenderer#render_partial_template'
+actionview (8.1.3) lib/action_view/renderer/partial_renderer.rb:253:in 'ActionView::PartialRenderer#render'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:78:in 'ActionView::Renderer#render_partial_to_object'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:49:in 'ActionView::Renderer#render_partial'
+actionview (8.1.3) lib/action_view/helpers/rendering_helper.rb:152:in 'ActionView::Helpers::RenderingHelper#render'
+administrate (1.0.0) app/views/layouts/administrate/application.html.erb:33
+actionview (8.1.3) lib/action_view/base.rb:281:in 'Kernel#public_send'
+actionview (8.1.3) lib/action_view/base.rb:281:in 'ActionView::Base#_run'
+actionview (8.1.3) lib/action_view/template.rb:284:in 'block in ActionView::Template#render'
+activesupport (8.1.3) lib/active_support/notifications.rb:212:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/template.rb:589:in 'ActionView::Template#instrument_render_template'
+actionview (8.1.3) lib/action_view/template.rb:272:in 'ActionView::Template#render'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:77:in 'block in ActionView::TemplateRenderer#render_with_layout'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (8.1.3) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:75:in 'ActionView::TemplateRenderer#render_with_layout'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:59:in 'ActionView::TemplateRenderer#render_template'
+actionview (8.1.3) lib/action_view/renderer/template_renderer.rb:11:in 'ActionView::TemplateRenderer#render'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:58:in 'ActionView::Renderer#render_template_to_object'
+actionview (8.1.3) lib/action_view/renderer/renderer.rb:31:in 'ActionView::Renderer#render_to_object'
+actionview (8.1.3) lib/action_view/rendering.rb:136:in 'block in ActionView::Rendering#_render_template'
+actionview (8.1.3) lib/action_view/base.rb:308:in 'ActionView::Base#in_rendering_context'
+actionview (8.1.3) lib/action_view/rendering.rb:135:in 'ActionView::Rendering#_render_template'
+actionpack (8.1.3) lib/action_controller/metal/streaming.rb:179:in 'ActionController::Streaming#_render_template'
+actionview (8.1.3) lib/action_view/rendering.rb:122:in 'ActionView::Rendering#render_to_body'
+actionpack (8.1.3) lib/action_controller/metal/rendering.rb:192:in 'ActionController::Rendering#render_to_body'
+actionpack (8.1.3) lib/action_controller/metal/renderers.rb:155:in 'ActionController::Renderers#render_to_body'
+actionpack (8.1.3) lib/abstract_controller/rendering.rb:28:in 'AbstractController::Rendering#render'
+actionpack (8.1.3) lib/action_controller/metal/rendering.rb:173:in 'ActionController::Rendering#render'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:31:in 'block (2 levels) in ActionController::Instrumentation#render'
+activesupport (8.1.3) lib/active_support/benchmark.rb:17:in 'ActiveSupport::Benchmark.realtime'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:31:in 'block in ActionController::Instrumentation#render'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:100:in 'ActionController::Instrumentation#cleanup_view_runtime'
+activerecord (8.1.3) lib/active_record/railties/controller_runtime.rb:48:in 'ActiveRecord::Railties::ControllerRuntime#cleanup_view_runtime'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:30:in 'ActionController::Instrumentation#render'
+administrate (1.0.0) app/controllers/administrate/application_controller.rb:15:in 'Administrate::ApplicationController#index'
+actionpack (8.1.3) lib/action_controller/metal/basic_implicit_render.rb:8:in 'ActionController::BasicImplicitRender#send_action'
+actionpack (8.1.3) lib/abstract_controller/base.rb:221:in 'AbstractController::Base#process_action'
+actionpack (8.1.3) lib/action_controller/metal/rendering.rb:199:in 'ActionController::Rendering#process_action'
+actionpack (8.1.3) lib/abstract_controller/callbacks.rb:267:in 'block in AbstractController::Callbacks#process_action'
+activesupport (8.1.3) lib/active_support/callbacks.rb:121:in 'block in ActiveSupport::Callbacks#run_callbacks'
+actiontext (8.1.3) lib/action_text/rendering.rb:24:in 'ActionText::Rendering::ClassMethods#with_renderer'
+actiontext (8.1.3) lib/action_text/engine.rb:72:in 'block (4 levels) in <class:Engine>'
+activesupport (8.1.3) lib/active_support/callbacks.rb:130:in 'BasicObject#instance_exec'
+activesupport (8.1.3) lib/active_support/callbacks.rb:130:in 'block in ActiveSupport::Callbacks#run_callbacks'
+activesupport (8.1.3) lib/active_support/callbacks.rb:141:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.1.3) lib/abstract_controller/callbacks.rb:266:in 'AbstractController::Callbacks#process_action'
+actionpack (8.1.3) lib/action_controller/metal/rescue.rb:36:in 'ActionController::Rescue#process_action'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:76:in 'block in ActionController::Instrumentation#process_action'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (8.1.3) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (8.1.3) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionpack (8.1.3) lib/action_controller/metal/instrumentation.rb:75:in 'ActionController::Instrumentation#process_action'
+actionpack (8.1.3) lib/action_controller/metal/params_wrapper.rb:259:in 'ActionController::ParamsWrapper#process_action'
+activerecord (8.1.3) lib/active_record/railties/controller_runtime.rb:39:in 'ActiveRecord::Railties::ControllerRuntime#process_action'
+actionpack (8.1.3) lib/abstract_controller/base.rb:154:in 'AbstractController::Base#process'
+actionview (8.1.3) lib/action_view/rendering.rb:40:in 'ActionView::Rendering#process'
+actionpack (8.1.3) lib/action_controller/metal.rb:252:in 'ActionController::Metal#dispatch'
+actionpack (8.1.3) lib/action_controller/metal.rb:335:in 'ActionController::Metal.dispatch'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:65:in 'ActionDispatch::Routing::RouteSet::Dispatcher#dispatch'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:50:in 'ActionDispatch::Routing::RouteSet::Dispatcher#serve'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:35:in 'block in ActionDispatch::Journey::Router#serve'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:86:in 'block in ActionDispatch::Journey::Router#recognize'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:66:in 'Array#each'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:66:in 'ActionDispatch::Journey::Router#recognize'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:31:in 'ActionDispatch::Journey::Router#serve'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:906:in 'ActionDispatch::Routing::RouteSet#call'
+railties (8.1.3) lib/rails/engine/lazy_route_set.rb:60:in 'Rails::Engine::LazyRouteSet#call'
+warden (1.2.9) lib/warden/manager.rb:36:in 'block in Warden::Manager#call'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Kernel#catch'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Warden::Manager#call'
+rack (3.2.6) lib/rack/tempfile_reaper.rb:20:in 'Rack::TempfileReaper#call'
+rack (3.2.6) lib/rack/etag.rb:29:in 'Rack::ETag#call'
+rack (3.2.6) lib/rack/conditional_get.rb:31:in 'Rack::ConditionalGet#call'
+rack (3.2.6) lib/rack/head.rb:15:in 'Rack::Head#call'
+actionpack (8.1.3) lib/action_dispatch/http/content_security_policy.rb:38:in 'ActionDispatch::ContentSecurityPolicy::Middleware#call'
+rack-session (2.1.1) lib/rack/session/abstract/id.rb:274:in 'Rack::Session::Abstract::Persisted#context'
+rack-session (2.1.1) lib/rack/session/abstract/id.rb:268:in 'Rack::Session::Abstract::Persisted#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/cookies.rb:708:in 'ActionDispatch::Cookies#call'
+activerecord (8.1.3) lib/active_record/migration.rb:671:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (8.1.3) lib/active_support/callbacks.rb:101:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.1.3) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/executor.rb:20:in 'ActionDispatch::Executor#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+web-console (4.3.0) lib/web_console/middleware.rb:132:in 'WebConsole::Middleware#call_app'
+web-console (4.3.0) lib/web_console/middleware.rb:28:in 'block in WebConsole::Middleware#call'
+web-console (4.3.0) lib/web_console/middleware.rb:17:in 'Kernel#catch'
+web-console (4.3.0) lib/web_console/middleware.rb:17:in 'WebConsole::Middleware#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (8.1.3) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (8.1.3) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/remote_ip.rb:98:in 'ActionDispatch::RemoteIp#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/request_id.rb:34:in 'ActionDispatch::RequestId#call'
+rack (3.2.6) lib/rack/method_override.rb:28:in 'Rack::MethodOverride#call'
+rack (3.2.6) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+activesupport (8.1.3) lib/active_support/cache/strategy/local_cache_middleware.rb:30:in 'ActiveSupport::Cache::Strategy::LocalCache::Middleware#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/executor.rb:20:in 'ActionDispatch::Executor#call'
+propshaft (1.3.1) lib/propshaft/server.rb:37:in 'Propshaft::Server#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.2.6) lib/rack/sendfile.rb:131:in 'Rack::Sendfile#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/host_authorization.rb:143:in 'ActionDispatch::HostAuthorization#call'
+railties (8.1.3) lib/rails/engine.rb:534:in 'Rails::Engine#call'
+puma (7.2.0) lib/puma/configuration.rb:296:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (7.2.0) lib/puma/request.rb:103:in 'block in Puma::Request#handle_request'
+puma (7.2.0) lib/puma/thread_pool.rb:355:in 'Puma::ThreadPool#with_force_shutdown'
+puma (7.2.0) lib/puma/request.rb:102:in 'Puma::Request#handle_request'
+puma (7.2.0) lib/puma/server.rb:503:in 'Puma::Server#process_client'
+puma (7.2.0) lib/puma/server.rb:262:in 'block in Puma::Server#run'
+puma (7.2.0) lib/puma/thread_pool.rb:182:in 'block in Puma::ThreadPool#spawn_thread'

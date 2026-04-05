@@ -1,6 +1,10 @@
 require "administrate/base_dashboard"
 
 class AdminUserDashboard < Administrate::BaseDashboard
+  def self.model_class
+    User
+  end
+
   ATTRIBUTE_TYPES = {
     id:           Field::Number,
     email:        Field::String,

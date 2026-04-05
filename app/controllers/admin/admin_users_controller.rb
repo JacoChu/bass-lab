@@ -1,5 +1,9 @@
 module Admin
   class AdminUsersController < Admin::ApplicationController
+    def resource_class
+      User
+    end
+
     def scoped_resource
       User.all.order(:created_at)
     end
