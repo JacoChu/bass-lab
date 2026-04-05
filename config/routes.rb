@@ -41,5 +41,7 @@ Rails.application.routes.draw do
     end
   end
 
+  root to: redirect("/admin")
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

@@ -227,3 +227,88 @@ Migrating to AddSubscriptionFieldsToOrdersAndUsers (20260405094829)
   [1m[35mSQL (0.0ms)[0m  [1m[35mSET search_path TO "$user", public[0m
 Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
 Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (5.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "admin@basslab.dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (3.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "display_name", "avatar_url", "role", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at", "trial_sessions_used") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email", "admin@basslab.dev"], ["encrypted_password", "[FILTERED]"], ["display_name", "Super Admin"], ["avatar_url", nil], ["role", 2], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["created_at", "2026-04-05 12:30:29.455442"], ["updated_at", "2026-04-05 12:30:29.455442"], ["trial_sessions_used", 0]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Started GET "/" for 127.0.0.1 at 2026-04-05 20:31:03 +0800
+  [1m[36mActiveRecord::SchemaMigration Load (1.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by Rails::WelcomeController#index as HTML
+  Rendering /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/railties-8.1.3/lib/rails/templates/rails/welcome/index.html.erb
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/railties-8.1.3/lib/rails/templates/rails/welcome/index.html.erb (Duration: 0.4ms | GC: 0.0ms)
+Completed 200 OK in 42ms (Views: 5.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/icon.png" for 127.0.0.1 at 2026-04-05 20:31:03 +0800
+  
+ActionController::RoutingError (No route matches [GET] "/icon.png"):
+  
+Started GET "/admin/sign_in" for 127.0.0.1 at 2026-04-05 20:31:17 +0800
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/devise-5.0.3/app/views/devise/sessions/new.html.erb within layouts/application
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/devise-5.0.3/app/views/devise/shared/_links.html.erb (Duration: 0.7ms | GC: 0.0ms)
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/devise-5.0.3/app/views/devise/sessions/new.html.erb within layouts/application (Duration: 13.0ms | GC: 0.6ms)
+  Rendered layout layouts/application.html.erb (Duration: 19.4ms | GC: 0.6ms)
+Completed 200 OK in 78ms (Views: 23.8ms | ActiveRecord: 13.6ms (0 queries, 0 cached) | GC: 5.9ms)
+
+
+Started POST "/users/sign_in" for 127.0.0.1 at 2026-04-05 20:31:30 +0800
+Processing by Devise::SessionsController#create as HTML
+  Parameters: {"authenticity_token" => "[FILTERED]", "user" => {"email" => "admin@basslab.dev", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "登入"}
+  [1m[36mUser Load (2.9ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@basslab.dev"], ["LIMIT", 1]]
+Redirected to http://127.0.0.1:3000/
+Completed 303 See Other in 292ms (ActiveRecord: 2.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-04-05 20:31:30 +0800
+Processing by Rails::WelcomeController#index as HTML
+  Rendering /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/railties-8.1.3/lib/rails/templates/rails/welcome/index.html.erb
+  Rendered /Users/yangchengchu/.rvm/gems/ruby-3.4.2/gems/railties-8.1.3/lib/rails/templates/rails/welcome/index.html.erb (Duration: 0.1ms | GC: 0.0ms)
+Completed 200 OK in 1ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/admin/admin_users" for ::1 at 2026-04-05 20:32:11 +0800
+Processing by Admin::AdminUsersController#index as HTML
+  Rendering text template
+  Rendered text template (Duration: 0.0ms | GC: 0.0ms)
+Filter chain halted as :authenticate_admin! rendered or redirected
+Completed 403 Forbidden in 4ms (Views: 2.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mUser Load (2.0ms)[0m  [1m[34mSELECT "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT $1[0m  [["LIMIT", 1]]
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2026-04-05 20:34:41 +0800
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
+Started GET "/admin/admin_users" for ::1 at 2026-04-05 20:34:43 +0800
+Processing by Admin::AdminUsersController#index as HTML
+  Rendering text template
+  Rendered text template (Duration: 0.0ms | GC: 0.0ms)
+Filter chain halted as :authenticate_admin! rendered or redirected
+Completed 403 Forbidden in 2ms (Views: 0.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2026-04-05 20:34:43 +0800
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
+Started GET "/admin/admin_users" for ::1 at 2026-04-05 20:34:46 +0800
+Processing by Admin::AdminUsersController#index as HTML
+  Rendering text template
+  Rendered text template (Duration: 0.0ms | GC: 0.0ms)
+Filter chain halted as :authenticate_admin! rendered or redirected
+Completed 403 Forbidden in 3ms (Views: 0.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2026-04-05 20:34:46 +0800
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
