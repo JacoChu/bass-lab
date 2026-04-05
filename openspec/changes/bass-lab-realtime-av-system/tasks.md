@@ -34,10 +34,10 @@
 
 ## 5. 即時通知（ActionCable）
 
-- [ ] 5.1 建立 `PresenceChannel`，實作 online presence broadcast：訂閱時廣播 `{ user_id, status: "online" }` 給所有 accepted 好友，斷線時廣播 `{ user_id, status: "offline" }`（呼應設計決策：ActionCable 信令傳遞：只做通知，不做媒體協商）
-- [ ] 5.2 建立 `InvitationChannel`，實作訂閱機制，讓前端能接收發送給自己的視訊邀請推播
-- [ ] 5.3 實作 `POST /api/invitations`：驗證受邀者在線（已訂閱 PresenceChannel），生成 120 秒 TTL 的 `session_token`（JWT 或 SecureRandom），廣播 video call invitation push notification 至 InvitationChannel，返回 HTTP 201 與 `session_token`；受邀者離線時返回 HTTP 422 "User is not online"
-- [ ] 5.4 實作 `POST /api/invitations/:token/accept`：驗證 token 未過期返回 Go 伺服器 URL 與 token；token 已過期返回 HTTP 422 "Invitation expired"
+- [x] 5.1 建立 `PresenceChannel`，實作 online presence broadcast：訂閱時廣播 `{ user_id, status: "online" }` 給所有 accepted 好友，斷線時廣播 `{ user_id, status: "offline" }`（呼應設計決策：ActionCable 信令傳遞：只做通知，不做媒體協商）
+- [x] 5.2 建立 `InvitationChannel`，實作訂閱機制，讓前端能接收發送給自己的視訊邀請推播
+- [x] 5.3 實作 `POST /api/invitations`：驗證受邀者在線（已訂閱 PresenceChannel），生成 120 秒 TTL 的 `session_token`（JWT 或 SecureRandom），廣播 video call invitation push notification 至 InvitationChannel，返回 HTTP 201 與 `session_token`；受邀者離線時返回 HTTP 422 "User is not online"
+- [x] 5.4 實作 `POST /api/invitations/:token/accept`：驗證 token 未過期返回 Go 伺服器 URL 與 token；token 已過期返回 HTTP 422 "Invitation expired"
 
 ## 6. Go 媒體伺服器
 

@@ -226,3 +226,4 @@ Migrating to AddSubscriptionFieldsToOrdersAndUsers (20260405094829)
   [1m[35mSQL (0.0ms)[0m  [1m[35mSET search_path TO public[0m
   [1m[35mSQL (0.0ms)[0m  [1m[35mSET search_path TO "$user", public[0m
 Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.

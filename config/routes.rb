@@ -27,6 +27,18 @@ Rails.application.routes.draw do
     end
 
     resources :subscriptions, only: %i[index destroy]
+
+    resources :invitations, only: %i[create] do
+      member do
+        post :accept
+      end
+    end
+
+    resources :sessions, only: [] do
+      collection do
+        get :validate
+      end
+    end
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
