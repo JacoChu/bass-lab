@@ -9,8 +9,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :users
-    resources :orders
-    resources :admin_users
+    resources :orders, only: %i[index show edit update]
+    resources :admin_users, only: %i[index edit update]
 
     root to: "users#index"
   end

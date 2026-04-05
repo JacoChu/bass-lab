@@ -11,6 +11,12 @@ class User < ApplicationRecord
 
   validates :display_name, presence: true
 
+  def accepted_friends
+    friend_ids = sent_friendships.accepted.pluck(:friend_id) +
+                 received_friendships.accepted.pluck(:user_id)
+    User.where(id: friend_ids)
+  end
+
   def active_subscription?
     orders.active.exists?
   end

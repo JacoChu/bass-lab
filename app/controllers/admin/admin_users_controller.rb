@@ -1,19 +1,29 @@
 module Admin
   class AdminUsersController < Admin::ApplicationController
-    def resource_class
-      User
+    before_action :set_user, only: %i[edit update]
+
+    def index
+      @users = User.all.order(:email)
     end
 
-    def scoped_resource
-      User.all.order(:created_at)
-    end
+    def edit; end
 
-    def permitted_attributes
-      if action_name.in?(%w[create])
-        [ :email, :display_name, :role, :password, :password_confirmation ]
+    def update
+      if @user.update(user_params)
+        redirect_to admin_admin_users_path, notice: "角色已更新。"
       else
-        [ :display_name, :role ]
+        render :edit, status: :unprocessable_entity
       end
+    end
+
+    private
+
+    def set_user
+      @user = User.find(params[:id])
+    end
+
+    def user_params
+      params.require(:user).permit(:role)
     end
   end
 end
