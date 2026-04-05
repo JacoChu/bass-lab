@@ -20,7 +20,7 @@
 
 - [x] 3.1 設定 Devise 與 Administrate gem，建立 Admin 登入路由 `/admin/sign_in`，實作 admin authentication：未驗證請求導向登入頁，驗證失敗顯示 "Invalid email or password"（呼應設計決策：後台管理系統：Administrate gem + Devise）
 - [x] 3.2 實作 Role-based access control (RBAC)（admin-panel spec）：設定 cancancan `Ability` 類別，`super_admin` 可 `:manage, :all`；其他角色（user）無後台存取權；在 `Admin::ApplicationController` 中確認非 super_admin 請求返回 403
-- [ ] 3.3 建立 `AdminUsers` Administrate dashboard（`app/dashboards/admin_user_dashboard.rb`），僅 `super_admin` 可存取 `/admin/admin_users`：可將任意 user 的 role 升為 super_admin 或降回 user；在 `Admin::AdminUsersController` 中加 `before_action :require_super_admin!`，非 super_admin 請求返回 403
+- [x] 3.3 建立 `AdminUsers` Administrate dashboard（`app/dashboards/admin_user_dashboard.rb`），僅 `super_admin` 可存取 `/admin/admin_users`：可將任意 user 的 role 升為 super_admin 或降回 user；在 `Admin::AdminUsersController` 中加 `before_action :require_super_admin!`，非 super_admin 請求返回 403
 - [ ] 3.4 實作 Order management 與 Admin subscription management（admin-panel spec、subscription-system spec）：建立 `Orders` Administrate dashboard（`app/dashboards/order_dashboard.rb`），顯示欄位含 `id`、`user_id`、`status`、`period`、`amount_cents`、`expires_at`、`created_at`；支援依 `status` 與 `created_at` 日期範圍篩選；`super_admin` 可編輯 `status`、`period`、`expires_at`（即取消或延長任意用戶訂閱）
 
 ## 4. 好友系統 API

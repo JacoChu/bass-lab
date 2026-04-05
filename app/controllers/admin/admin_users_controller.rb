@@ -1,55 +1,37 @@
 module Admin
   class AdminUsersController < Admin::ApplicationController
-    before_action :require_super_admin!
+    before_action :set_resource, only: %i[show edit update destroy]
 
     def index
-      @resources = User.where(role: [ :staff, :super_admin ]).page(params[:page])
+      @resources = User.all.order(:created_at).page(params[:page])
       @page = Administrate::Page::Collection.new(dashboard, order: order)
     end
 
-    def show
-      @resource = User.find(params[:id])
-    end
+    def show; end
 
-    def new
-      @resource = User.new
-    end
-
-    def create
-      @resource = User.new(admin_user_params)
-      if @resource.save
-        redirect_to admin_admin_users_path, notice: "Admin user created."
-      else
-        render :new, status: :unprocessable_entity
-      end
-    end
-
-    def edit
-      @resource = User.find(params[:id])
-    end
+    def edit; end
 
     def update
-      @resource = User.find(params[:id])
       if @resource.update(admin_user_params)
-        redirect_to admin_admin_users_path, notice: "Admin user updated."
+        redirect_to admin_admin_users_path, notice: "User updated."
       else
         render :edit, status: :unprocessable_entity
       end
     end
 
     def destroy
-      User.find(params[:id]).destroy
-      redirect_to admin_admin_users_path, notice: "Admin user deleted."
+      @resource.destroy
+      redirect_to admin_admin_users_path, notice: "User removed."
     end
 
     private
 
-    def require_super_admin!
-      raise CanCan::AccessDenied unless current_user.super_admin?
+    def set_resource
+      @resource = User.find(params[:id])
     end
 
     def admin_user_params
-      params.require(:user).permit(:email, :display_name, :role, :password, :password_confirmation)
+      params.require(:user).permit(:display_name, :role)
     end
 
     def dashboard
