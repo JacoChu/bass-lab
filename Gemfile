@@ -25,14 +25,8 @@ gem "solid_queue"
 # Cache backed by PostgreSQL (no Redis)
 gem "solid_cache"
 
-# Admin panel
-gem "administrate"
-
 # Authentication for admin users
 gem "devise"
-
-# Role-based access control
-gem "cancancan"
 
 # JSON builder
 gem "jbuilder"
