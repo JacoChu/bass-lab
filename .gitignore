@@ -4,6 +4,9 @@ openspec/.vector-search.db*
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+# Rails log
+/log/
+
 # Rails tmp (bootsnap cache, pids, sockets)
 /tmp/cache/
 /tmp/pids/

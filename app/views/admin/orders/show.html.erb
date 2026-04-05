@@ -1,0 +1,32 @@
+<div class="flex items-center gap-3 mb-6">
+  <%= link_to "← 返回", admin_orders_path, class: "btn btn-ghost btn-sm" %>
+  <h1 class="text-2xl font-bold">訂單詳情 #<%= @order.id %></h1>
+  <%= link_to "編輯", edit_admin_order_path(@order), class: "btn btn-outline btn-sm ml-auto" %>
+</div>
+
+<div class="card bg-base-100 shadow border border-base-300 max-w-lg">
+  <div class="card-body">
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div><span class="opacity-60">ID</span><p class="font-mono mt-0.5"><%= @order.id %></p></div>
+      <div>
+        <span class="opacity-60">使用者</span>
+        <p class="mt-0.5">
+          <%= link_to @order.user&.email, admin_user_path(@order.user), class: "link" if @order.user %>
+        </p>
+      </div>
+      <div>
+        <span class="opacity-60">狀態</span>
+        <p class="mt-0.5">
+          <span class="badge <%= @order.confirmed? ? 'badge-success' : @order.cancelled? ? 'badge-error' : 'badge-warning' %>">
+            <%= @order.status %>
+          </span>
+        </p>
+      </div>
+      <div><span class="opacity-60">方案</span><p class="mt-0.5"><%= @order.period || "—" %></p></div>
+      <div><span class="opacity-60">金額</span><p class="mt-0.5"><%= @order.amount_cents ? "$#{@order.amount_cents / 100}" : "—" %></p></div>
+      <div><span class="opacity-60">到期日</span><p class="mt-0.5"><%= @order.expires_at&.strftime("%Y-%m-%d %H:%M") || "—" %></p></div>
+      <div><span class="opacity-60">建立時間</span><p class="mt-0.5"><%= @order.created_at.strftime("%Y-%m-%d %H:%M") %></p></div>
+      <div><span class="opacity-60">更新時間</span><p class="mt-0.5"><%= @order.updated_at.strftime("%Y-%m-%d %H:%M") %></p></div>
+    </div>
+  </div>
+</div>

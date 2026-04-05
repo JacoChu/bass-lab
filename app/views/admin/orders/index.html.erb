@@ -1,0 +1,73 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">訂單管理</h1>
+</div>
+
+<!-- Filters -->
+<div class="card bg-base-100 shadow border border-base-300 mb-4">
+  <div class="card-body py-4">
+    <%= form_with url: admin_orders_path, method: :get, class: "flex flex-wrap gap-3 items-end" do |f| %>
+      <div class="form-control">
+        <label class="label label-text text-xs">狀態</label>
+        <%= f.select :status,
+              [["全部", ""], ["pending", "pending"], ["confirmed", "confirmed"], ["cancelled", "cancelled"]],
+              { selected: params[:status] },
+              class: "select select-bordered select-sm" %>
+      </div>
+      <div class="form-control">
+        <label class="label label-text text-xs">建立起始日</label>
+        <%= f.date_field :created_from, value: params[:created_from], class: "input input-bordered input-sm" %>
+      </div>
+      <div class="form-control">
+        <label class="label label-text text-xs">建立結束日</label>
+        <%= f.date_field :created_to, value: params[:created_to], class: "input input-bordered input-sm" %>
+      </div>
+      <%= f.submit "篩選", class: "btn btn-primary btn-sm" %>
+      <%= link_to "清除", admin_orders_path, class: "btn btn-ghost btn-sm" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="card bg-base-100 shadow border border-base-300">
+  <div class="overflow-x-auto">
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>使用者</th>
+          <th>狀態</th>
+          <th>方案</th>
+          <th>金額</th>
+          <th>到期日</th>
+          <th>建立時間</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @orders.each do |order| %>
+          <tr>
+            <td class="opacity-60"><%= order.id %></td>
+            <td>
+              <%= link_to order.user&.email, admin_user_path(order.user), class: "link link-hover text-sm" if order.user %>
+            </td>
+            <td>
+              <span class="badge badge-sm <%= order.confirmed? ? 'badge-success' : order.cancelled? ? 'badge-error' : 'badge-warning' %>">
+                <%= order.status %>
+              </span>
+            </td>
+            <td><%= order.period || "—" %></td>
+            <td><%= order.amount_cents ? "$#{order.amount_cents / 100}" : "—" %></td>
+            <td><%= order.expires_at&.strftime("%Y-%m-%d") || "—" %></td>
+            <td class="opacity-60"><%= order.created_at.strftime("%Y-%m-%d") %></td>
+            <td class="flex gap-2">
+              <%= link_to "查看", admin_order_path(order), class: "btn btn-xs btn-ghost" %>
+              <%= link_to "編輯", edit_admin_order_path(order), class: "btn btn-xs btn-outline" %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @orders.empty? %>
+          <tr><td colspan="8" class="text-center opacity-50 py-8">無符合條件的訂單</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

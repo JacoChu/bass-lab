@@ -1,48 +1,27 @@
-<%#
-# Edit
+<div class="flex items-center gap-3 mb-6">
+  <%= link_to "← 返回", admin_admin_users_path, class: "btn btn-ghost btn-sm" %>
+  <h1 class="text-2xl font-bold">變更角色</h1>
+</div>
 
-This view is the template for the edit page.
+<div class="card bg-base-100 shadow border border-base-300 max-w-sm">
+  <div class="card-body">
+    <p class="text-sm opacity-60 mb-4">
+      Email：<strong><%= @user.email %></strong>
+    </p>
 
-It displays a header, and renders the `_form` partial to do the heavy lifting.
+    <%= form_with model: [:admin, @user], url: admin_admin_user_path(@user), class: "space-y-4" do |f| %>
+      <div class="form-control">
+        <label class="label label-text font-medium">角色</label>
+        <%= f.select :role,
+              User.roles.keys.map { |r| [r, r] },
+              { selected: @user.role },
+              class: "select select-bordered w-full" %>
+      </div>
 
-## Local variables:
-
-- `page`:
-  An instance of [Administrate::Page::Form][1].
-  Contains helper methods to help display a form,
-  and knows which attributes should be displayed in the resource's form.
-
-[1]: http://www.rubydoc.info/gems/administrate/Administrate/Page/Form
-%>
-
-<% content_for(:title) { t("administrate.actions.edit_resource", name: page.page_title) } %>
-
-<header class="main-content__header">
-  <h1 class="main-content__page-title">
-    <%= content_for(:title) %>
-  </h1>
-
-  <%= content_for(:header_middle) %>
-
-  <div>
-    <%= link_to(
-      t("administrate.actions.show_resource", name: page.page_title),
-      [namespace, page.resource],
-      class: "button",
-    ) if accessible_action?(page.resource, :show) %>
+      <div class="flex gap-3 pt-2">
+        <%= f.submit "儲存", class: "btn btn-primary" %>
+        <%= link_to "取消", admin_admin_users_path, class: "btn btn-ghost" %>
+      </div>
+    <% end %>
   </div>
-
-  <%= content_for(:header_last) %>
-</header>
-
-<%= content_for(:before_main) %>
-
-<% if content_for?(:main) %>
-  <%= content_for(:main) %>
-<% else %>
-  <section class="main-content__body">
-    <%= render "form", page: page %>
-  </section>
-<% end %>
-
-<%= content_for(:after_main) %>
+</div>

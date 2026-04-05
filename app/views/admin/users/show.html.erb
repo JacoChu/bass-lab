@@ -1,0 +1,84 @@
+<div class="flex items-center gap-3 mb-6">
+  <%= link_to "← 返回", admin_users_path, class: "btn btn-ghost btn-sm" %>
+  <h1 class="text-2xl font-bold">使用者詳情</h1>
+  <%= link_to "編輯", edit_admin_user_path(@user), class: "btn btn-outline btn-sm ml-auto" %>
+</div>
+
+<!-- User Info -->
+<div class="card bg-base-100 shadow border border-base-300 mb-6">
+  <div class="card-body">
+    <h2 class="card-title text-base mb-4">基本資料</h2>
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div><span class="opacity-60">ID</span><p class="font-mono mt-0.5"><%= @user.id %></p></div>
+      <div><span class="opacity-60">Email</span><p class="mt-0.5"><%= @user.email %></p></div>
+      <div><span class="opacity-60">顯示名稱</span><p class="mt-0.5"><%= @user.display_name %></p></div>
+      <div>
+        <span class="opacity-60">角色</span>
+        <p class="mt-0.5">
+          <span class="badge <%= @user.super_admin? ? 'badge-error' : 'badge-ghost' %>"><%= @user.role %></span>
+        </p>
+      </div>
+      <div>
+        <span class="opacity-60">訂閱狀態</span>
+        <p class="mt-0.5">
+          <% if @user.active_subscription? %>
+            <span class="badge badge-success">訂閱中</span>
+          <% else %>
+            <span class="badge badge-ghost">無訂閱</span>
+          <% end %>
+        </p>
+      </div>
+      <div><span class="opacity-60">試用次數</span><p class="mt-0.5"><%= @user.trial_sessions_used %> / 2</p></div>
+      <div><span class="opacity-60">建立時間</span><p class="mt-0.5"><%= @user.created_at.strftime("%Y-%m-%d %H:%M") %></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Orders -->
+<div class="card bg-base-100 shadow border border-base-300 mb-6">
+  <div class="card-body">
+    <h2 class="card-title text-base mb-4">訂單紀錄 (<%= @orders.count %>)</h2>
+    <% if @orders.any? %>
+      <div class="overflow-x-auto">
+        <table class="table table-sm">
+          <thead>
+            <tr><th>#</th><th>狀態</th><th>方案</th><th>金額</th><th>到期日</th><th>建立時間</th><th></th></tr>
+          </thead>
+          <tbody>
+            <% @orders.each do |order| %>
+              <tr>
+                <td class="opacity-60"><%= order.id %></td>
+                <td><span class="badge badge-sm <%= order.confirmed? ? 'badge-success' : order.cancelled? ? 'badge-error' : 'badge-warning' %>"><%= order.status %></span></td>
+                <td><%= order.period || "—" %></td>
+                <td><%= order.amount_cents ? "$#{order.amount_cents / 100}" : "—" %></td>
+                <td><%= order.expires_at&.strftime("%Y-%m-%d") || "—" %></td>
+                <td class="opacity-60"><%= order.created_at.strftime("%Y-%m-%d") %></td>
+                <td><%= link_to "查看", admin_order_path(order), class: "btn btn-xs btn-ghost" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-sm opacity-50">尚無訂單紀錄。</p>
+    <% end %>
+  </div>
+</div>
+
+<!-- Accepted Friends -->
+<div class="card bg-base-100 shadow border border-base-300">
+  <div class="card-body">
+    <h2 class="card-title text-base mb-4">好友列表 (<%= @friends.count %>)</h2>
+    <% if @friends.any? %>
+      <div class="flex flex-wrap gap-2">
+        <% @friends.each do |friend| %>
+          <%= link_to admin_user_path(friend), class: "badge badge-outline gap-1 cursor-pointer hover:badge-primary" do %>
+            <%= friend.display_name %>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm opacity-50">尚無好友。</p>
+    <% end %>
+  </div>
+</div>

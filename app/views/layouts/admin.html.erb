@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bass Lab Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('admin-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <%= csrf_meta_tags %>
+</head>
+<body class="min-h-screen bg-base-100">
+
+<div class="drawer lg:drawer-open">
+  <input id="drawer" type="checkbox" class="drawer-toggle" />
+
+  <div class="drawer-content flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <nav class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-10 shadow-sm">
+      <div class="flex-none lg:hidden">
+        <label for="drawer" class="btn btn-square btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </label>
+      </div>
+      <div class="flex-1 px-2 font-semibold text-base hidden lg:block">Bass Lab Admin</div>
+      <div class="flex-none gap-2">
+        <button onclick="toggleTheme()" class="btn btn-ghost btn-circle" title="切換主題">
+          <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+        </button>
+        <div class="dropdown dropdown-end">
+          <label tabindex="0" class="btn btn-ghost gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="hidden sm:inline text-sm"><%= current_user.email %></span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </label>
+          <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48 border border-base-300 mt-1">
+            <li><%= link_to "登出", destroy_admin_session_path, data: { turbo_method: :delete } %></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash -->
+    <% if flash[:notice] %>
+      <div class="px-6 pt-4">
+        <div class="alert alert-success"><span><%= flash[:notice] %></span></div>
+      </div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="px-6 pt-4">
+        <div class="alert alert-error"><span><%= flash[:alert] %></span></div>
+      </div>
+    <% end %>
+
+    <!-- Content -->
+    <main class="flex-1 p-6"><%= yield %></main>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="drawer-side z-20">
+    <label for="drawer" class="drawer-overlay"></label>
+    <aside class="bg-base-200 w-60 min-h-full flex flex-col">
+      <div class="p-5 text-xl font-bold border-b border-base-300 flex items-center gap-2">
+        🎸 Bass Lab
+      </div>
+      <ul class="menu p-4 flex-1 text-base-content gap-0.5 text-sm">
+        <li class="menu-title text-xs uppercase tracking-wider opacity-60 mt-2">管理介面</li>
+        <li>
+          <%= link_to admin_users_path, class: "#{request.path.start_with?(admin_users_path) ? 'active' : ''} flex gap-2 items-center" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            使用者管理
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_orders_path, class: "#{request.path.start_with?(admin_orders_path) ? 'active' : ''} flex gap-2 items-center" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+            </svg>
+            訂單管理
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_admin_users_path, class: "#{request.path.start_with?(admin_admin_users_path) ? 'active' : ''} flex gap-2 items-center" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            角色管理
+          <% end %>
+        </li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+  function toggleTheme() {
+    var html = document.documentElement;
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('admin-theme', next);
+    syncIcons(next);
+  }
+  function syncIcons(theme) {
+    var sun = document.getElementById('icon-sun');
+    var moon = document.getElementById('icon-moon');
+    if (theme === 'dark') { sun.classList.remove('hidden'); moon.classList.add('hidden'); }
+    else { sun.classList.add('hidden'); moon.classList.remove('hidden'); }
+  }
+  syncIcons(document.documentElement.getAttribute('data-theme') || 'light');
+</script>
+</body>
+</html>

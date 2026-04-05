@@ -1,0 +1,53 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">使用者管理</h1>
+  <%= link_to "＋ 新增使用者", new_admin_user_path, class: "btn btn-primary btn-sm" %>
+</div>
+
+<div class="card bg-base-100 shadow border border-base-300">
+  <div class="overflow-x-auto">
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Email</th>
+          <th>顯示名稱</th>
+          <th>角色</th>
+          <th>訂閱</th>
+          <th>試用次數</th>
+          <th>建立時間</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td class="text-sm opacity-60"><%= user.id %></td>
+            <td><%= user.email %></td>
+            <td><%= user.display_name %></td>
+            <td>
+              <span class="badge <%= user.super_admin? ? 'badge-error' : 'badge-ghost' %> badge-sm">
+                <%= user.role %>
+              </span>
+            </td>
+            <td>
+              <% if user.active_subscription? %>
+                <span class="badge badge-success badge-sm">訂閱中</span>
+              <% else %>
+                <span class="badge badge-ghost badge-sm">無</span>
+              <% end %>
+            </td>
+            <td><%= user.trial_sessions_used %> / 2</td>
+            <td class="text-sm opacity-60"><%= user.created_at.strftime("%Y-%m-%d") %></td>
+            <td class="flex gap-2">
+              <%= link_to "查看", admin_user_path(user), class: "btn btn-xs btn-ghost" %>
+              <%= link_to "編輯", edit_admin_user_path(user), class: "btn btn-xs btn-outline" %>
+              <%= button_to "刪除", admin_user_path(user), method: :delete,
+                    class: "btn btn-xs btn-error btn-outline",
+                    data: { confirm: "確定要刪除 #{user.email}？" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
