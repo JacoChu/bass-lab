@@ -15,5 +15,19 @@ Rails.application.routes.draw do
     root to: "users#index"
   end
 
+  namespace :api do
+    resources :friends, only: %i[index destroy] do
+      collection do
+        resources :requests, controller: "friend_requests", only: %i[index create destroy] do
+          member do
+            post :accept
+          end
+        end
+      end
+    end
+
+    resources :subscriptions, only: %i[index destroy]
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

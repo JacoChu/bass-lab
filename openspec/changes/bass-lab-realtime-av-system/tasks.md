@@ -25,12 +25,12 @@
 
 ## 4. 好友系統 API
 
-- [ ] 4.1 建立 `Friendship` model（`belongs_to :user`, `belongs_to :friend, class_name: 'User'`），採用好友系統資料模型：自關聯 has_many :through 設計（`user_id` 與 `friend_id` 均指向 `users`，以 `status` 欄位區分方向，查詢時加 `OR` 條件）；加入 `status` enum 與驗證：禁止重複的 `pending/accepted` 關係，實作 friend request lifecycle
-- [ ] 4.2 實作 `POST /api/friends/requests`：建立 `pending` 好友邀請，已有 pending/accepted 紀錄時返回 HTTP 422 與 "Friend request already sent"
-- [ ] 4.3 實作 `POST /api/friends/requests/:id/accept` 與 `DELETE /api/friends/requests/:id`：接受邀請將 status 更新為 `accepted`；拒絕邀請刪除紀錄
-- [ ] 4.4 實作 `GET /api/friends`：返回 `status = accepted` 的好友列表（含 `user_id`, `display_name`, `avatar_url`），實作 friend list retrieval
-- [ ] 4.5 實作 `GET /api/friends/requests`：返回 incoming pending friend request list（`friend_id = 當前使用者`，含 `requester_id`, `display_name`, `avatar_url`, `requested_at`）
-- [ ] 4.6 實作 `DELETE /api/friends/:id`：刪除 `accepted` 好友關係（無論哪方發起），找不到時返回 HTTP 404 "Friendship not found"，實作 remove friend
+- [x] 4.1 建立 `Friendship` model（`belongs_to :user`, `belongs_to :friend, class_name: 'User'`），採用好友系統資料模型：自關聯 has_many :through 設計（`user_id` 與 `friend_id` 均指向 `users`，以 `status` 欄位區分方向，查詢時加 `OR` 條件）；加入 `status` enum 與驗證：禁止重複的 `pending/accepted` 關係，實作 friend request lifecycle
+- [x] 4.2 實作 `POST /api/friends/requests`：建立 `pending` 好友邀請，已有 pending/accepted 紀錄時返回 HTTP 422 與 "Friend request already sent"
+- [x] 4.3 實作 `POST /api/friends/requests/:id/accept` 與 `DELETE /api/friends/requests/:id`：接受邀請將 status 更新為 `accepted`；拒絕邀請刪除紀錄
+- [x] 4.4 實作 `GET /api/friends`：返回 `status = accepted` 的好友列表（含 `user_id`, `display_name`, `avatar_url`），實作 friend list retrieval
+- [x] 4.5 實作 `GET /api/friends/requests`：返回 incoming pending friend request list（`friend_id = 當前使用者`，含 `requester_id`, `display_name`, `avatar_url`, `requested_at`）
+- [x] 4.6 實作 `DELETE /api/friends/:id`：刪除 `accepted` 好友關係（無論哪方發起），找不到時返回 HTTP 404 "Friendship not found"，實作 remove friend
 
 ## 5. 即時通知（ActionCable）
 
