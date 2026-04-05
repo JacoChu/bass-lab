@@ -6,7 +6,10 @@
       "Bash(spectra analyze:*)",
       "Bash(spectra validate:*)",
       "Bash(spectra park:*)",
-      "Bash(spectra list:*)"
+      "Bash(spectra list:*)",
+      "Bash(spectra unpark:*)",
+      "Bash(spectra in-progress:*)",
+      "Bash(bundle install:*)"
     ]
   }
 }

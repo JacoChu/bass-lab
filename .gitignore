@@ -1,2 +1,5 @@
 .spectra/
 openspec/.vector-search.db*
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
