@@ -5,6 +5,8 @@
 ## What Changes
 
 - **新增後台管理系統**：管理員可透過 Rails 後台進行登入驗證、角色權限控管及訂單管理。
+- **新增 Google OAuth 登入**：使用者可透過 Google 帳號登入，省去密碼管理；以 `omniauth-google-oauth2` 整合 Devise omniauthable，`users` 表加 `provider` 與 `uid` 欄位。
+- **新增二階段驗證（2FA）**：使用者可選擇性啟用 TOTP 二階段驗證（相容 Google Authenticator / Authy）；以 `devise-two-factor` 實作，`users` 表加 `otp_secret`、`otp_required_for_login`、`consumed_timestep` 欄位。
 - **新增好友系統**：使用者可互相加好友、管理好友關係，並在好友列表查看即時上線狀態。
 - **新增即時通知機制**：透過 ActionCable (Solid Cable) 推播「好友上線/離線」狀態更新與「視訊邀請」通知。
 - **新增 Go 媒體伺服器**：以 Go + Pion 實作 WebRTC 信令交換與 SFU 媒體轉發，接收 RTP 封包後不解碼、直接轉發，確保最低處理延遲。
@@ -31,6 +33,8 @@
 - `webrtc-media-server`: Go + Pion 媒體伺服器，負責 WebRTC 信令交換（offer/answer/ICE）、SDP 攔截修改與 RTP 封包直通轉發（SFU，不解碼）
 - `device-selector`: React 前端裝置選擇 UI，使用 `navigator.mediaDevices.enumerateDevices()` 列舉並允許選取特定 `deviceId`
 - `audio-pipeline`: React 前端音訊前處理管線，包含停用瀏覽器 DSP 處理、`GainNode` 前級增益（5x）、`ChannelSplitter/Merger` 雙聲道處理
+- `google-oauth`: 以 `omniauth-google-oauth2` 整合 Devise omniauthable，允許使用者透過 Google 帳號登入；`users` 表新增 `provider`、`uid` 欄位
+- `two-factor-auth`: 以 `devise-two-factor` 實作 TOTP 二階段驗證（相容 Google Authenticator / Authy），使用者可選擇性啟用；`users` 表新增 `otp_secret`、`otp_required_for_login`、`consumed_timestep` 欄位
 
 ### Modified Capabilities
 
@@ -38,10 +42,11 @@
 
 ## Impact
 
-- Affected specs: `admin-panel`, `friend-system`, `realtime-presence`, `webrtc-media-server`, `device-selector`, `audio-pipeline`
+- Affected specs: `admin-panel`, `friend-system`, `realtime-presence`, `webrtc-media-server`, `device-selector`, `audio-pipeline`, `google-oauth`, `two-factor-auth`
 - Affected code:
   - `app/models/` — User, Friendship, Order 模型
   - `app/controllers/admin/` — 後台管理控制器
+  - `app/controllers/users/` — OmniauthCallbacksController（Google OAuth callback）
   - `app/channels/` — ActionCable channel（PresenceChannel, InvitationChannel）
   - `app/javascript/` — React SPA 主要前端程式碼
   - `app/javascript/components/DeviceSelector/` — 裝置選擇器元件
@@ -50,5 +55,7 @@
   - `media-server/signaling/` — WebRTC 信令處理
   - `media-server/sfu/` — SFU RTP 轉發邏輯
   - `media-server/sdp/` — SDP 修改邏輯
-  - `db/migrate/` — User、Friendship、Order 相關 migration
+  - `db/migrate/` — User、Friendship、Order 相關 migration，以及 Google OAuth、2FA 欄位 migration
   - `config/cable.yml` — Solid Cable 設定
+  - `config/initializers/devise.rb` — Devise OmniAuth 設定
+  - `Gemfile` — 新增 `omniauth-google-oauth2`、`omniauth-rails_csrf_protection`、`devise-two-factor`、`rotp`、`rqrcode`
