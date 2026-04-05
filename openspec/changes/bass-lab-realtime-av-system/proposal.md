@@ -4,7 +4,7 @@
 
 ## What Changes
 
-- **新增後台管理系統**：管理員（super_admin）可透過 Rails 後台進行登入驗證、查看全部訂閱訂單、編輯與取消任意用戶訂閱；RBAC 簡化為 `super_admin` vs `user`，不啟用 `staff` 角色。
+- **新增後台管理系統**：管理員（super_admin）可透過 Rails 後台進行登入驗證、查看全部訂閱訂單、編輯與取消任意用戶訂閱、代用戶建立新訂閱；RBAC 簡化為 `super_admin` vs `user`，不啟用 `staff` 角色。用戶詳細頁顯示該用戶的好友列表（accepted friendships）與訂單列表，可直接點擊跳轉訂單管理，並提供「New Subscription」按鈕讓管理員直接為該用戶建立新訂閱。
 - **新增訂閱制度**：新用戶享有 2 次免費試用（每次上限 5 分鐘）；訂閱月方案或年方案後解鎖完整通話功能；`orders` 表加 `period` enum（monthly/yearly）與 `expires_at` 欄位追蹤有效期；`users` 表加 `trial_sessions_used`（integer, default: 0）記錄試用消耗次數。
 - **新增訂閱自助管理 API**：使用者可查看個人訂閱紀錄（`GET /api/subscriptions`）及取消訂閱（`DELETE /api/subscriptions/:id`，將 status 更新為 `cancelled`）。
 - **新增 Google OAuth 登入**：使用者可透過 Google 帳號登入，省去密碼管理；以 `omniauth-google-oauth2` 整合 Devise omniauthable，`users` 表加 `provider` 與 `uid` 欄位。
@@ -29,7 +29,7 @@
 
 ### New Capabilities
 
-- `admin-panel`: 後台管理系統，含登入驗證、RBAC（super_admin only）、訂閱訂單查看與編輯/取消
+- `admin-panel`: 後台管理系統，含登入驗證、RBAC（super_admin only）、訂閱訂單查看與編輯/取消、代用戶建立新訂閱（從用戶詳細頁發起，user_id 預填且唯讀，status 預設 confirmed）
 - `subscription-system`: 訂閱制度，含試用 2 次限制、月/年方案、到期追蹤、用戶自助取消、session 建立前的訂閱/試用資格檢查
 - `friend-system`: 好友關係資料模型與 API，含好友邀請、接受/拒絕、解除好友操作
 - `realtime-presence`: 以 ActionCable (Solid Cable) 實作的即時上線狀態廣播與視訊邀請推播通知

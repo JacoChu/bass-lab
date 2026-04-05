@@ -7,6 +7,7 @@
 - [x] 1.5 設定 `config/cable.yml` 以啟用 ActionCable transport via Solid Cable（PostgreSQL adapter），確認不需要 Redis 即可運作
 
 - [x] 1.6 架構決策：取消獨立的 `admin_users` table，改在 `users` table 加 `role` 欄位（enum: `user/staff/super_admin`）統一管理所有使用者；Devise 與 Administrate 均以 `User` model 運作
+- [x] 1.7 補全 `.gitignore`：加入 `log/`（Rails log 目錄不應進版控）
 
 ## 2. 資料庫 Migration
 
@@ -22,6 +23,9 @@
 - [x] 3.2 實作 Role-based access control (RBAC)（admin-panel spec）：設定 cancancan `Ability` 類別，`super_admin` 可 `:manage, :all`；其他角色（user）無後台存取權；在 `Admin::ApplicationController` 中確認非 super_admin 請求返回 403
 - [x] 3.3 建立 `AdminUsers` Administrate dashboard（`app/dashboards/admin_user_dashboard.rb`），僅 `super_admin` 可存取 `/admin/admin_users`：可將任意 user 的 role 升為 super_admin 或降回 user；在 `Admin::AdminUsersController` 中加 `before_action :require_super_admin!`，非 super_admin 請求返回 403
 - [x] 3.4 實作 Order management 與 Admin subscription management（admin-panel spec、subscription-system spec）：建立 `Orders` Administrate dashboard（`app/dashboards/order_dashboard.rb`），顯示欄位含 `id`、`user_id`、`status`、`period`、`amount_cents`、`expires_at`、`created_at`；支援依 `status` 與 `created_at` 日期範圍篩選；`super_admin` 可編輯 `status`、`period`、`expires_at`（即取消或延長任意用戶訂閱）
+- [x] 3.5 修正 `UserDashboard` 表單欄位（admin-panel spec）：移除自動生成的 `encrypted_password`、`orders`、`received_friendships`、`sent_friendships`、`remember_created_at`、`reset_password_sent_at`、`reset_password_token`；改用 Devise virtual attribute `password`、`password_confirmation`；`FORM_ATTRIBUTES = %i[email display_name role password password_confirmation]`；`Admin::UsersController#permitted_attributes` create 允許 `[:email, :display_name, :role, :password, :password_confirmation]`，update 只允許 `[:display_name, :role]`
+- [x] 3.6 實作 User detail view with friends and orders（admin-panel spec）：在 `User` model 新增 `def accepted_friends` 返回雙向 accepted friendships 的對方 User 物件（`Friendship.where("(user_id = ? OR friend_id = ?) AND status = ?", id, id, :accepted).map { |f| f.user_id == id ? f.friend : f.user }`）；更新 `UserDashboard` ATTRIBUTE_TYPES 加入 `orders: Field::HasMany`、`accepted_friends: Field::HasMany`；更新 `SHOW_PAGE_ATTRIBUTES` 加入 `orders`、`accepted_friends`；更新 `COLLECTION_ATTRIBUTES` 加入顯示好友數的欄位（以 `accepted_friends` count 呈現）
+- [ ] 3.7 實作 Admin creates subscription for user（admin-panel spec）：（1）在 `UserDashboard` show 頁面覆寫 Administrate 部分視圖 `app/views/admin/users/_collection_header_actions.html.erb`，加入「New Subscription」按鈕，連結為 `new_admin_order_path(user_id: resource.id)`；（2）在 `Admin::OrdersController` 覆寫 `new` action：`@order = Order.new(user_id: params[:user_id], status: :confirmed)`；（3）在 `OrderDashboard` 新增 `NEW_PAGE_ATTRIBUTES = %i[user_id period amount_cents expires_at]`，`user_id` 使用 `Field::BelongsTo` 且於 new 表單中以 hidden field 送出、顯示為 read-only 文字；（4）`Order` model 已有 `validates :expires_at, presence: true, if: :confirmed?`，確認覆蓋新建路徑；（5）成功建立後 Administrate 預設 redirect 至 `/admin/orders/:id`
 
 ## 4. 好友系統 API
 

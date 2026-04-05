@@ -65,3 +65,40 @@ The system SHALL provide a CRUD interface for subscription orders. An order SHAL
 
 - **WHEN** an admin edits an order and updates `expires_at` to a future date
 - **THEN** the system persists the change and the user regains active subscription access
+
+---
+
+### Requirement: User detail view with friends and orders
+
+The system SHALL display on each user's show page (`/admin/users/:id`): (1) a list of accepted friends showing `display_name` for each friendship where `user_id = id OR friend_id = id AND status = accepted`; (2) a list of that user's orders showing `id`, `status`, `period`, `expires_at`, each row linkable to `/admin/orders/:order_id`.
+
+#### Scenario: Admin views a user's accepted friends
+
+- **WHEN** a super_admin visits `/admin/users/:id`
+- **THEN** the show page SHALL render a "Friends" section listing all accepted friendships (display_name of the other party); if the user has no accepted friends the section SHALL render empty
+
+#### Scenario: Admin navigates from user to order
+
+- **WHEN** a super_admin visits `/admin/users/:id` and clicks an order row
+- **THEN** the system SHALL navigate to `/admin/orders/:order_id` showing that order's details
+
+---
+
+### Requirement: Admin creates subscription for user
+
+The system SHALL allow a super_admin to create a new subscription order for any user directly from the user detail page (`/admin/users/:id`). The user detail page SHALL display a "New Subscription" link that navigates to `/admin/orders/new` with `user_id` pre-populated. The new order form SHALL accept `period` (monthly/yearly), `amount_cents`, and `expires_at`; `status` SHALL default to `confirmed`; `user_id` SHALL be read-only on the form (pre-filled and not editable). The created order SHALL immediately satisfy the `User#session_eligible?` check if `expires_at` is in the future.
+
+#### Scenario: Admin creates a monthly subscription from the user page
+
+- **WHEN** a super_admin visits `/admin/users/:id` and clicks "New Subscription"
+- **THEN** the system navigates to `/admin/orders/new?user_id=<id>` with `user_id` field pre-filled and read-only, `status` defaulting to `confirmed`
+
+#### Scenario: Admin submits valid subscription form
+
+- **WHEN** a super_admin fills in `period = monthly`, `amount_cents`, `expires_at` (future date) and submits
+- **THEN** the system creates the order with `status = confirmed` and redirects to `/admin/orders/:new_order_id`; the user immediately gains active subscription access
+
+#### Scenario: Admin submits subscription form with missing required field
+
+- **WHEN** a super_admin submits the new order form without `expires_at`
+- **THEN** the system renders the form again with a validation error and does not create the order
