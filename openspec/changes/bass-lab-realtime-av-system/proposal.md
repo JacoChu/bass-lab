@@ -4,7 +4,9 @@
 
 ## What Changes
 
-- **新增後台管理系統**：管理員可透過 Rails 後台進行登入驗證、角色權限控管及訂單管理。
+- **新增後台管理系統**：管理員（super_admin）可透過 Rails 後台進行登入驗證、查看全部訂閱訂單、編輯與取消任意用戶訂閱；RBAC 簡化為 `super_admin` vs `user`，不啟用 `staff` 角色。
+- **新增訂閱制度**：新用戶享有 2 次免費試用（每次上限 5 分鐘）；訂閱月方案或年方案後解鎖完整通話功能；`orders` 表加 `period` enum（monthly/yearly）與 `expires_at` 欄位追蹤有效期；`users` 表加 `trial_sessions_used`（integer, default: 0）記錄試用消耗次數。
+- **新增訂閱自助管理 API**：使用者可查看個人訂閱紀錄（`GET /api/subscriptions`）及取消訂閱（`DELETE /api/subscriptions/:id`，將 status 更新為 `cancelled`）。
 - **新增 Google OAuth 登入**：使用者可透過 Google 帳號登入，省去密碼管理；以 `omniauth-google-oauth2` 整合 Devise omniauthable，`users` 表加 `provider` 與 `uid` 欄位。
 - **新增二階段驗證（2FA）**：使用者可選擇性啟用 TOTP 二階段驗證（相容 Google Authenticator / Authy）；以 `devise-two-factor` 實作，`users` 表加 `otp_secret`、`otp_required_for_login`、`consumed_timestep` 欄位。
 - **新增好友系統**：使用者可互相加好友、管理好友關係，並在好友列表查看即時上線狀態。
@@ -20,14 +22,15 @@
 - 不包含錄音/錄影儲存功能（本次僅處理即時串流）
 - 不包含行動裝置（iOS/Android App）支援，僅限桌面瀏覽器
 - 不包含多房間/多人同時連線（本次 SFU 專注於一對一或小型 session）
-- 不包含付款金流整合（訂單管理僅含後台 CRUD，不含線上付款）
+- 不包含付款金流整合（訂閱管理含狀態 CRUD 與試用追蹤，但不含線上刷卡/付款）
 - 不包含 CSV 資料匯入/匯出（需求不明確，待後續另立 change 定義）
 
 ## Capabilities
 
 ### New Capabilities
 
-- `admin-panel`: 後台管理系統，含登入驗證、角色權限（RBAC）、訂單 CRUD
+- `admin-panel`: 後台管理系統，含登入驗證、RBAC（super_admin only）、訂閱訂單查看與編輯/取消
+- `subscription-system`: 訂閱制度，含試用 2 次限制、月/年方案、到期追蹤、用戶自助取消、session 建立前的訂閱/試用資格檢查
 - `friend-system`: 好友關係資料模型與 API，含好友邀請、接受/拒絕、解除好友操作
 - `realtime-presence`: 以 ActionCable (Solid Cable) 實作的即時上線狀態廣播與視訊邀請推播通知
 - `webrtc-media-server`: Go + Pion 媒體伺服器，負責 WebRTC 信令交換（offer/answer/ICE）、SDP 攔截修改與 RTP 封包直通轉發（SFU，不解碼）
@@ -42,7 +45,7 @@
 
 ## Impact
 
-- Affected specs: `admin-panel`, `friend-system`, `realtime-presence`, `webrtc-media-server`, `device-selector`, `audio-pipeline`, `google-oauth`, `two-factor-auth`
+- Affected specs: `admin-panel`, `subscription-system`, `friend-system`, `realtime-presence`, `webrtc-media-server`, `device-selector`, `audio-pipeline`, `google-oauth`, `two-factor-auth`
 - Affected code:
   - `app/models/` — User, Friendship, Order 模型
   - `app/controllers/admin/` — 後台管理控制器
@@ -55,7 +58,8 @@
   - `media-server/signaling/` — WebRTC 信令處理
   - `media-server/sfu/` — SFU RTP 轉發邏輯
   - `media-server/sdp/` — SDP 修改邏輯
-  - `db/migrate/` — User、Friendship、Order 相關 migration，以及 Google OAuth、2FA 欄位 migration
+  - `app/controllers/api/subscriptions_controller.rb` — 用戶訂閱自助 API
+  - `db/migrate/` — User（trial_sessions_used）、Friendship、Order（period, expires_at）相關 migration，以及 Google OAuth、2FA 欄位 migration
   - `config/cable.yml` — Solid Cable 設定
   - `config/initializers/devise.rb` — Devise OmniAuth 設定
   - `Gemfile` — 新增 `omniauth-google-oauth2`、`omniauth-rails_csrf_protection`、`devise-two-factor`、`rotp`、`rqrcode`

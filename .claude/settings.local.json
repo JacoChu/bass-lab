@@ -14,7 +14,8 @@
       "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(f['severity'], f['id'], f['summary']\\) for f in data['findings'] if f['severity'] in \\('Critical','Warning'\\)]\")",
       "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); findings=[f for f in data['findings'] if f['severity'] in \\('Critical','Warning'\\)]; print\\(f'Critical/Warning: {len\\(findings\\)}'\\); [print\\(f['severity'], f['id'], f['summary']\\) for f in findings]\")",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(python3 -c ':*)"
     ]
   }
 }

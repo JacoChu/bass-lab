@@ -10,4 +10,12 @@ class User < ApplicationRecord
   has_many :orders, dependent: :destroy
 
   validates :display_name, presence: true
+
+  def active_subscription?
+    orders.active.exists?
+  end
+
+  def session_eligible?
+    active_subscription? || trial_sessions_used < 2
+  end
 end

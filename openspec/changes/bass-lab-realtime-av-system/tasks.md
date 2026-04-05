@@ -14,13 +14,14 @@
 - [x] 2.2 建立 `friendships` table migration，自關聯設計（`user_id`、`friend_id` 均指向 `users`，加 `status` enum、`requested_at`），建立複合唯一索引，建立 Friendship model
 - [x] 2.3 取消獨立 `admin_users` table，role 統一在 `users` 管理（見 task 1.6）
 - [x] 2.4 建立 `orders` table migration（含 `user_id`、`status` enum、`amount_cents`），建立 Order model
+- [x] 2.5 實作 Subscription plans 資料模型（subscription-system spec）：建立 migration 新增訂閱相關欄位 — `orders` 加 `period` integer enum（0=monthly, 1=yearly）與 `expires_at` timestamp；`users` 加 `trial_sessions_used` integer（default: 0）；執行 `rails db:migrate`；更新 Order model 加入 `period` enum 與 `validates :expires_at, presence: true, if: :confirmed?`；更新 User model 加入 `trial_sessions_used` 欄位
 
 ## 3. 後台管理系統
 
 - [x] 3.1 設定 Devise 與 Administrate gem，建立 Admin 登入路由 `/admin/sign_in`，實作 admin authentication：未驗證請求導向登入頁，驗證失敗顯示 "Invalid email or password"（呼應設計決策：後台管理系統：Administrate gem + Devise）
-- [ ] 3.2 設定 cancancan `Ability` 類別，實作 role-based access control (RBAC)：`super_admin` 有完整存取權，`staff` 對 orders/users 只讀，`staff` 存取 `/admin/admin_users` 返回 403
-- [ ] 3.3 建立 `AdminUsers` Administrate dashboard，實作 `super_admin` 可新增/編輯/刪除管理員帳號
-- [ ] 3.4 建立 `Orders` Administrate dashboard，實作 order management：依 `status` 與 `created_at` 日期範圍篩選，`super_admin` 可編輯 `status`，`staff` 只讀
+- [ ] 3.2 實作 Role-based access control (RBAC)（admin-panel spec）：設定 cancancan `Ability` 類別，`super_admin` 可 `:manage, :all`；其他角色（user）無後台存取權；在 `Admin::ApplicationController` 中確認非 super_admin 請求返回 403
+- [ ] 3.3 建立 `AdminUsers` Administrate dashboard（`app/dashboards/admin_user_dashboard.rb`），僅 `super_admin` 可存取 `/admin/admin_users`：可將任意 user 的 role 升為 super_admin 或降回 user；在 `Admin::AdminUsersController` 中加 `before_action :require_super_admin!`，非 super_admin 請求返回 403
+- [ ] 3.4 實作 Order management 與 Admin subscription management（admin-panel spec、subscription-system spec）：建立 `Orders` Administrate dashboard（`app/dashboards/order_dashboard.rb`），顯示欄位含 `id`、`user_id`、`status`、`period`、`amount_cents`、`expires_at`、`created_at`；支援依 `status` 與 `created_at` 日期範圍篩選；`super_admin` 可編輯 `status`、`period`、`expires_at`（即取消或延長任意用戶訂閱）
 
 ## 4. 好友系統 API
 
@@ -84,3 +85,10 @@
 - [ ] 11.3 建立 `app/controllers/users/two_factor_controller.rb`：`GET /users/two_factor/setup` — 若尚未啟用 2FA，呼叫 `current_user.generate_totp_secret` 並暫存於 session，以 `rqrcode` 產生 QR Code SVG 回傳給前端；`POST /users/two_factor/enable` — 從 session 取出暫存 secret，以 `current_user.validate_and_consume_otp!(params[:otp_attempt])` 驗證；成功則儲存 `otp_secret`、設定 `otp_required_for_login = true`；失敗則回傳 422 + `{ error: "Invalid verification code" }`
 - [ ] 11.4 建立 `app/controllers/users/two_factor_controller.rb#disable` action：`DELETE /users/two_factor` — 驗證使用者已登入，設定 `otp_required_for_login = false`、清空 `otp_secret`，回傳 200
 - [ ] 11.5 覆寫 Devise `SessionsController`（`app/controllers/users/sessions_controller.rb`）：在 `create` action 中，主要憑證驗證通過後，若使用者 `otp_required_for_login?`，則不立即 sign_in，改為將 `user_id` 存入 session 並 redirect 至 2FA 驗證頁；建立 `POST /users/sessions/verify_otp` action — 從 session 取出 `user_id`，呼叫 `user.validate_and_consume_otp!(params[:otp_attempt])`；成功則 sign_in 並導向 root；失敗則回傳 422 + `{ error: "Invalid two-factor code" }`
+
+## 12. 訂閱系統
+
+- [ ] 12.1 實作 Trial session allowance 與 Subscription plans 資格檢查（subscription-system spec）：在 `POST /api/invitations` 的 controller 中，呼叫 helper `User#session_eligible?`；該 method 返回 `true` 的條件：`orders.where(status: :confirmed).where("expires_at > ?", Time.current).exists?` 或 `trial_sessions_used < 2`；不符合時返回 HTTP 403 + `{ error: "No active subscription. Please subscribe to continue." }`
+- [ ] 12.2 實作試用計次遞增：session 結束時（Go 伺服器呼叫 Rails `DELETE /api/sessions/:token`），若該 session 屬於試用（發起者無 active subscription），則對發起者 user 執行 `increment!(:trial_sessions_used)`；Rails 端建立 `DELETE /api/sessions/:token` endpoint，驗證 token 有效後執行清理邏輯
+- [ ] 12.3 實作試用 5 分鐘強制結束：Go 伺服器在 session 建立時，若 Rails 驗證回應包含 `"trial": true`，則啟動 300 秒 timer；時間到時以 close code 4004 關閉雙方 WebSocket 連線；Rails `GET /api/sessions/validate?token=...` 的回應格式為 `{ valid: true, session_id: "...", trial: true|false }`
+- [ ] 12.4 實作 User subscription self-service（subscription-system spec）：建立 `app/controllers/api/subscriptions_controller.rb`；`GET /api/subscriptions` — 返回 `current_user.orders.order(created_at: :desc)` 序列化為 `[{ id, status, period, amount_cents, expires_at, created_at }]`，HTTP 200；`DELETE /api/subscriptions/:id` — 查找 `current_user.orders.find(params[:id])`，找不到返回 404，找到則 `order.update!(status: :cancelled)` 返回 HTTP 200 + `{ message: "Subscription cancelled." }`；在 `config/routes.rb` 加入 `namespace :api { resources :subscriptions, only: [:index, :destroy] }`

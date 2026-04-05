@@ -2,6 +2,10 @@ module Admin
   class ApplicationController < Administrate::ApplicationController
     before_action :authenticate_admin!
 
+    rescue_from CanCan::AccessDenied do
+      render plain: "403 Forbidden", status: :forbidden
+    end
+
     private
 
     def authenticate_admin!
@@ -10,8 +14,8 @@ module Admin
       end
     end
 
-    def after_sign_in_path_for(resource)
-      admin_root_path
+    def current_ability
+      @current_ability ||= Ability.new(current_user)
     end
   end
 end
