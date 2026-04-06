@@ -68,7 +68,7 @@
 
 ## 9. 前端 - 路由設定與通話介面
 
-- [x] 9.0 安裝 `react-router-dom`（`npm install react-router-dom`）；將 `frontend/src/App.tsx` 從 Vite 預設範本完全替換為 `<BrowserRouter>` + `<Routes>` 設定：`/` → 重導至 `/friends`、`/friends` → `<FriendsPage>`、`/call/:token` → `<CallPage>`；確認開啟 `http://localhost:5173/friends` 可見好友列表頁（非空白頁）
+- [x] 9.0 安裝 `react-router-dom`（`npm install react-router-dom`）；將 `frontend/src/App.tsx` 從 Vite 預設範本完全替換為 `<BrowserRouter>` + `<Routes>` 設定（SPA client-side routing）：`/` → 重導至 `/friends`、`/friends` → `<FriendsPage>`、`/call/:token` → `<CallPage>`；確認開啟 `http://localhost:5173/friends` 可見好友列表頁（非空白頁）
 - [x] 9.1 將 `frontend/src/pages/FriendList.tsx`（若已存在則重命名為 `FriendsPage.tsx`）改造成完整可瀏覽的好友列表頁面（route: `/friends`）：頁面標題「Friends」、呼叫 `GET /api/friends` 顯示好友卡片列表（display_name、online badge）、訂閱 `PresenceChannel`，接收 `{ user_id, status }` 廣播後即時更新好友在線/離線狀態圖示；首次載入時呼叫 `GET /api/friends` 取得所有好友；每個好友卡片顯示 display_name 與綠/灰圓點表示在線狀態
 - [x] 9.2 在 `FriendsPage` 訂閱 `InvitationChannel`，接收視訊邀請 `{ from_user_id, from_display_name, session_token }` 後顯示邀請彈窗（含接受/拒絕按鈕）；接受後呼叫 `POST /api/invitations/:token/accept` 取得 Go 伺服器 URL，以 `react-router-dom` 的 `useNavigate` 導向 `/call/:token`；拒絕則關閉彈窗
 - [x] 9.3 在 `FriendsPage` 為每個在線好友卡片加入「發起通話」按鈕：點擊後呼叫 `POST /api/invitations`（body: `{ invitee_id }`），取得 `session_token` 後顯示「等待對方接受…」狀態（可含取消按鈕）；超過 120 秒未接受或使用者取消時清除等待狀態並顯示「邀請已過期」；成功對方接受後，前端透過 `InvitationChannel` 收到接受訊息，以 `useNavigate` 導向 `/call/:token`
@@ -85,15 +85,43 @@
 
 ## 11. 二階段驗證（2FA）
 
-- [ ] 11.1 實作 TOTP two-factor authentication（two-factor-auth spec）：在 `Gemfile` 新增 `devise-two-factor`、`rotp`、`rqrcode` 並執行 `bundle install`；執行 `rails generate devise_two_factor User`，確認生成的 migration 包含 `otp_secret`（encrypted_attribute）、`otp_required_for_login`（boolean, default: false）、`consumed_timestep`（integer）欄位
-- [ ] 11.2 更新 `User` model：加入 `devise :two_factor_authenticatable, otp_secret_encryption_key: ENV["OTP_SECRET_ENCRYPTION_KEY"]`；加入 `has_one_time_password(backup_codes: false)`；確認 `Devise` 的 `:two_factor_backupable` **不**啟用（本次 Non-Goal）
-- [ ] 11.3 建立 `app/controllers/users/two_factor_controller.rb`：`GET /users/two_factor/setup` — 若尚未啟用 2FA，呼叫 `current_user.generate_totp_secret` 並暫存於 session，以 `rqrcode` 產生 QR Code SVG 回傳給前端；`POST /users/two_factor/enable` — 從 session 取出暫存 secret，以 `current_user.validate_and_consume_otp!(params[:otp_attempt])` 驗證；成功則儲存 `otp_secret`、設定 `otp_required_for_login = true`；失敗則回傳 422 + `{ error: "Invalid verification code" }`
-- [ ] 11.4 建立 `app/controllers/users/two_factor_controller.rb#disable` action：`DELETE /users/two_factor` — 驗證使用者已登入，設定 `otp_required_for_login = false`、清空 `otp_secret`，回傳 200
-- [ ] 11.5 覆寫 Devise `SessionsController`（`app/controllers/users/sessions_controller.rb`）：在 `create` action 中，主要憑證驗證通過後，若使用者 `otp_required_for_login?`，則不立即 sign_in，改為將 `user_id` 存入 session 並 redirect 至 2FA 驗證頁；建立 `POST /users/sessions/verify_otp` action — 從 session 取出 `user_id`，呼叫 `user.validate_and_consume_otp!(params[:otp_attempt])`；成功則 sign_in 並導向 root；失敗則回傳 422 + `{ error: "Invalid two-factor code" }`
+- [x] 11.1 實作 TOTP two-factor authentication（two-factor-auth spec）：在 `Gemfile` 新增 `devise-two-factor`、`rotp`、`rqrcode` 並執行 `bundle install`；執行 `rails generate devise_two_factor User`，確認生成的 migration 包含 `otp_secret`（encrypted_attribute）、`otp_required_for_login`（boolean, default: false）、`consumed_timestep`（integer）欄位
+- [x] 11.2 更新 `User` model：加入 `devise :two_factor_authenticatable, otp_secret_encryption_key: ENV["OTP_SECRET_ENCRYPTION_KEY"]`；加入 `has_one_time_password(backup_codes: false)`；確認 `Devise` 的 `:two_factor_backupable` **不**啟用（本次 Non-Goal）
+- [x] 11.3 建立 `app/controllers/users/two_factor_controller.rb`：`GET /users/two_factor/setup` — 若尚未啟用 2FA，呼叫 `current_user.generate_totp_secret` 並暫存於 session，以 `rqrcode` 產生 QR Code SVG 回傳給前端；`POST /users/two_factor/enable` — 從 session 取出暫存 secret，以 `current_user.validate_and_consume_otp!(params[:otp_attempt])` 驗證；成功則儲存 `otp_secret`、設定 `otp_required_for_login = true`；失敗則回傳 422 + `{ error: "Invalid verification code" }`
+- [x] 11.4 建立 `app/controllers/users/two_factor_controller.rb#disable` action：`DELETE /users/two_factor` — 驗證使用者已登入，設定 `otp_required_for_login = false`、清空 `otp_secret`，回傳 200
+- [x] 11.5 覆寫 Devise `SessionsController`（`app/controllers/users/sessions_controller.rb`）：在 `create` action 中，主要憑證驗證通過後，若使用者 `otp_required_for_login?`，則不立即 sign_in，改為將 `user_id` 存入 session 並 redirect 至 2FA 驗證頁；建立 `POST /users/sessions/verify_otp` action — 從 session 取出 `user_id`，呼叫 `user.validate_and_consume_otp!(params[:otp_attempt])`；成功則 sign_in 並導向 root；失敗則回傳 422 + `{ error: "Invalid two-factor code" }`
 
 ## 12. 訂閱系統
 
-- [ ] 12.1 實作 Trial session allowance 與 Subscription plans 資格檢查（subscription-system spec）：在 `POST /api/invitations` 的 controller 中，呼叫 helper `User#session_eligible?`；該 method 返回 `true` 的條件：`orders.where(status: :confirmed).where("expires_at > ?", Time.current).exists?` 或 `trial_sessions_used < 2`；不符合時返回 HTTP 403 + `{ error: "No active subscription. Please subscribe to continue." }`
-- [ ] 12.2 實作試用計次遞增：session 結束時（Go 伺服器呼叫 Rails `DELETE /api/sessions/:token`），若該 session 屬於試用（發起者無 active subscription），則對發起者 user 執行 `increment!(:trial_sessions_used)`；Rails 端建立 `DELETE /api/sessions/:token` endpoint，驗證 token 有效後執行清理邏輯
-- [ ] 12.3 實作試用 5 分鐘強制結束：Go 伺服器在 session 建立時，若 Rails 驗證回應包含 `"trial": true`，則啟動 300 秒 timer；時間到時以 close code 4004 關閉雙方 WebSocket 連線；Rails `GET /api/sessions/validate?token=...` 的回應格式為 `{ valid: true, session_id: "...", trial: true|false }`
-- [ ] 12.4 實作 User subscription self-service（subscription-system spec）：建立 `app/controllers/api/subscriptions_controller.rb`；`GET /api/subscriptions` — 返回 `current_user.orders.order(created_at: :desc)` 序列化為 `[{ id, status, period, amount_cents, expires_at, created_at }]`，HTTP 200；`DELETE /api/subscriptions/:id` — 查找 `current_user.orders.find(params[:id])`，找不到返回 404，找到則 `order.update!(status: :cancelled)` 返回 HTTP 200 + `{ message: "Subscription cancelled." }`；在 `config/routes.rb` 加入 `namespace :api { resources :subscriptions, only: [:index, :destroy] }`
+- [x] 12.1 實作 Trial session allowance 與 Subscription plans 資格檢查（subscription-system spec）：在 `POST /api/invitations` 的 controller 中，呼叫 helper `User#session_eligible?`；該 method 返回 `true` 的條件：`orders.where(status: :confirmed).where("expires_at > ?", Time.current).exists?` 或 `trial_sessions_used < 2`；不符合時返回 HTTP 403 + `{ error: "No active subscription. Please subscribe to continue." }`
+- [x] 12.2 實作試用計次遞增：session 結束時（Go 伺服器呼叫 Rails `DELETE /api/sessions/:token`），若該 session 屬於試用（發起者無 active subscription），則對發起者 user 執行 `increment!(:trial_sessions_used)`；Rails 端建立 `DELETE /api/sessions/:token` endpoint，驗證 token 有效後執行清理邏輯
+- [x] 12.3 實作試用 5 分鐘強制結束：Go 伺服器在 session 建立時，若 Rails 驗證回應包含 `"trial": true`，則啟動 300 秒 timer；時間到時以 close code 4004 關閉雙方 WebSocket 連線；Rails `GET /api/sessions/validate?token=...` 的回應格式為 `{ valid: true, session_id: "...", trial: true|false }`
+- [x] 12.4 實作 User subscription self-service（subscription-system spec）：建立 `app/controllers/api/subscriptions_controller.rb`；`GET /api/subscriptions` — 返回 `current_user.orders.order(created_at: :desc)` 序列化為 `[{ id, status, period, amount_cents, expires_at, created_at }]`，HTTP 200；`DELETE /api/subscriptions/:id` — 查找 `current_user.orders.find(params[:id])`，找不到返回 404，找到則 `order.update!(status: :cancelled)` 返回 HTTP 200 + `{ message: "Subscription cancelled." }`；在 `config/routes.rb` 加入 `namespace :api { resources :subscriptions, only: [:index, :destroy] }`
+
+## 13. 前端 Shell - Layout & Nav Bar
+
+- [x] 13.1 安裝 DaisyUI（`npm install daisyui`）並在 `frontend/vite.config.ts` 的 Tailwind 設定中加入 DaisyUI plugin；確認 `data-theme="light"` 與 `data-theme="dark"` 可套用 DaisyUI 內建主題樣式（App shell 套版）
+- [x] 13.2 建立 `frontend/src/components/Layout/AppLayout.tsx`（App Shell with persistent Nav Bar）：頁面頂端固定 Nav Bar，右側包含導覽連結（好友 `/friends`、訂單 `/orders`）、「快速通話」按鈕（→ `/lobby`）、dark/light toggle 按鈕（sun/moon icon）、使用者 display_name 下拉選單（含「個人資料」→ `/profile`、「登出」→ `DELETE /users/sign_out`）；Nav Bar 下方為 `<Outlet>` 內容區
+- [x] 13.3 實作 Dark/light mode toggle：頁面初始化時讀取 `localStorage["theme"]`，預設為 `"light"`；設定 `document.documentElement.setAttribute("data-theme", theme)`；toggle 按鈕點擊後切換 theme、更新 `localStorage["theme"]`、更新按鈕 icon（light 模式顯示月亮、dark 模式顯示太陽）
+- [x] 13.4 更新 `frontend/src/App.tsx` 路由結構：`/`、`/lobby`、`/friends`、`/orders`、`/profile` 使用 nested route 包在 `<AppLayout>` 下（以 `<Outlet>` 渲染子頁面）；`/call/:token` 不套 AppLayout（全螢幕通話頁）；`/` 重導至 `/lobby`（取代原先重導至 `/friends`）
+- [x] 13.5 從 `GET /api/profile` 取得當前使用者的 `display_name`，在 Nav Bar 下拉選單中顯示；登出按鈕觸發 `DELETE /users/sign_out` 並重導至 `/users/sign_in`
+
+## 14. 使用者前台 - 個人資料頁
+
+- [x] 14.1 建立 Rails API `GET /api/profile`（`Api::ProfileController#show`）：返回 `{ display_name, email, trial_sessions_used, otp_required_for_login }`（User profile management page 所需資料）；建立 `PATCH /api/profile`（`#update`，Display name update）：只允許更新 `display_name`，成功返回 200 + 更新後 user JSON，驗證失敗返回 422 + `{ errors }`；在 `config/routes.rb` 的 `namespace :api` 加入 `resource :profile, only: [:show, :update]`
+- [x] 14.2 建立 Rails API `POST /api/profile/password`：以 `resource.valid_password?(params[:current_password])` 驗證舊密碼，失敗返回 422 + `{ error: "Current password is incorrect" }`；成功則 `resource.update!(password: params[:new_password])` 返回 HTTP 200；在 routes 加入 `resource :profile` 的 `member { post :password }`
+- [x] 14.3 建立 Rails API `PATCH /api/profile/email`：驗證新 email 格式，呼叫 `resource.update!(email: params[:email])`（Devise confirmable 會自動寄送驗證信至新信箱），返回 HTTP 200 + `{ message: "Confirmation email sent. Please check your new inbox." }`；格式驗證失敗返回 422 + `{ errors }`；在 routes 加入 `member { patch :email }`
+- [x] 14.4 建立 `frontend/src/pages/ProfilePage.tsx`（route: `/profile`，User profile management page）：呼叫 `GET /api/profile` 取得初始資料；提供三個獨立 section：（1）display_name 行內編輯（`PATCH /api/profile`，Display name update）；（2）密碼修改表單（current_password + new_password + confirm，`POST /api/profile/password`，password change）；（3）email 修改（`PATCH /api/profile/email`，email change with verification）；各 section 獨立顯示成功/錯誤訊息
+- [x] 14.5 在 ProfilePage 加入 2FA 管理 section（2FA management on profile page）：呼叫 `GET /api/profile` 取得 `otp_required_for_login`；未啟用時顯示「啟用 2FA」按鈕 → 點擊呼叫 `GET /users/two_factor/setup` → 顯示 QR Code SVG + OTP 輸入框 → 提交 `POST /users/two_factor/enable`；已啟用時顯示「停用 2FA」按鈕 → 點擊 `DELETE /users/two_factor`；操作結果即時更新顯示狀態
+
+## 15. 使用者前台 - 訂單歷史紀錄頁
+
+- [x] 15.1 建立 `frontend/src/pages/OrdersPage.tsx`（route: `/orders`）：呼叫 `GET /api/subscriptions` 取得訂單列表（user order history page）；以表格或卡片列表顯示每筆訂單欄位：id、period（Monthly/Yearly）、amount_cents（格式化為 NT$XX,XXX）、status（confirmed/cancelled）、expires_at（YYYY-MM-DD）、created_at（YYYY-MM-DD）；空列表顯示「目前沒有訂閱紀錄」
+- [x] 15.2 在 OrdersPage 頂端顯示訂閱狀態摘要（subscription and trial status summary）：呼叫 `GET /api/profile` 取得 `trial_sessions_used`；若有 `status === "confirmed"` 且 `expires_at > now` 的訂單顯示「訂閱中：有效至 YYYY-MM-DD」（取 expires_at 最大值）；否則顯示「目前無有效訂閱」；固定顯示「免費試用：已使用 N / 2 次」
+- [x] 15.3 實作取消訂閱功能（cancel subscription）：`confirmed` 狀態訂單顯示「取消訂閱」按鈕；點擊後顯示 DaisyUI confirm dialog「確定要取消此訂閱嗎？取消後無法復原。」；確認後呼叫 `DELETE /api/subscriptions/:id`；成功後該筆訂單 status 即時更新為 `cancelled` 並移除按鈕；失敗時顯示 alert 錯誤訊息
+
+## 16. 視訊通話大廳
+
+- [x] 16.1 建立 `frontend/src/pages/LobbyPage.tsx`（route: `/lobby`，Call lobby page）：mount 時呼叫 `getUserMedia({ audio: true, video: true })` 取得本地預覽 stream；將 stream 綁定至 muted `<video>` 元素顯示本地預覽；提供麥克風靜音切換按鈕（切換 `audioTrack.enabled`）與攝影機靜音切換按鈕（切換 `videoTrack.enabled`）；unmount 時對所有 track 呼叫 `.stop()`（Lobby camera preview teardown）
+- [x] 16.2 在 LobbyPage 整合 DeviceSelector 元件（lobby 裝置選擇）：使用者選擇新裝置後，停止舊 stream 並重新呼叫 `getUserMedia` 套用新 `deviceId`，更新本地預覽；使用 `useAudioPipeline` hook 取得處理後的 audio stream 供後續通話使用
+- [x] 16.3 在 LobbyPage 顯示好友在線列表（friend selection and call initiation from lobby）：呼叫 `GET /api/friends` 取得好友列表，訂閱 `PresenceChannel` 維護即時在線狀態；在線好友（綠點）顯示「通話」按鈕；離線好友列於下方灰色區域不顯示通話按鈕；點擊「通話」後呼叫 `POST /api/invitations`，顯示「等待 {display_name} 接受通話…」+ 取消按鈕；120 秒逾時自動顯示「邀請已過期」；`InvitationChannel` 收到 `{ accepted: true, session_token }` 後 `useNavigate('/call/:token')`

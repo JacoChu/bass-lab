@@ -11,8 +11,8 @@ Rails.application.routes.draw do
     delete "two_factor",         to: "users/two_factor#disable", as: :two_factor_disable
   end
 
-  # OTP verification step after primary credential check
-  post "/users/sessions/verify_otp", to: "users/sessions#verify_otp", as: :users_verify_otp
+  # OTP verification step after primary credential check (separate controller avoids Devise routing conflicts)
+  post "/users/sessions/verify_otp", to: "users/otp_sessions#create", as: :users_verify_otp
 
   devise_scope :user do
     get    "/admin/sign_in",  to: "devise/sessions#new",     as: :new_admin_session
@@ -41,13 +41,20 @@ Rails.application.routes.draw do
 
     resources :subscriptions, only: %i[index destroy]
 
+    resource :profile, only: %i[show update], controller: :profile do
+      member do
+        post :password
+        patch :email
+      end
+    end
+
     resources :invitations, only: %i[create] do
       member do
         post :accept
       end
     end
 
-    resources :sessions, only: [] do
+    resources :sessions, only: [:destroy], constraints: { id: /[^\/]+/ } do
       collection do
         get :validate
       end

@@ -12,7 +12,11 @@
 - **新增好友系統**：使用者可互相加好友、管理好友關係，並在好友列表查看即時上線狀態。
 - **新增即時通知機制**：透過 ActionCable (Solid Cable) 推播「好友上線/離線」狀態更新與「視訊邀請」通知。
 - **新增 Go 媒體伺服器**：以 Go + Pion 實作 WebRTC 信令交換與 SFU 媒體轉發，接收 RTP 封包後不解碼、直接轉發，確保最低處理延遲。
-- **新增前端 SPA 路由**：以 `react-router-dom` 建立 React SPA 頁面路由結構；`App.tsx` 替換 Vite 預設範本，設定 `<BrowserRouter>` + `<Routes>`；各功能均為獨立可瀏覽頁面，路由對應：`/friends`（好友列表頁）、`/call/:token`（通話頁）；每個頁面可直接透過瀏覽器 URL 存取，不再只是元件檔案。
+- **新增前端 SPA 路由**：以 `react-router-dom` 建立 React SPA 頁面路由結構；`App.tsx` 替換 Vite 預設範本，設定 `<BrowserRouter>` + `<Routes>`；各功能均為獨立可瀏覽頁面，路由對應：`/lobby`（通話大廳）、`/friends`（好友列表）、`/orders`（訂單紀錄）、`/profile`（個人資料）、`/call/:token`（通話頁）；每個頁面可直接透過瀏覽器 URL 存取，不再只是元件檔案。
+- **新增前端 App Shell 與 Nav Bar**：使用 DaisyUI 為全站建立統一 Layout，含固定頂部 Nav Bar（好友目錄、訂單歷史、快速開啟視訊、個人資訊下拉）；支援 dark/light mode 切換，偏好儲存於 localStorage 並以 `data-theme` attribute 套用 DaisyUI 主題；樣式風格與 Rails 後台一致。
+- **新增使用者前台帳號管理頁**：使用者可在 `/profile` 修改 `display_name`、變更密碼（驗證舊密碼）、申請修改 email（寄送驗證信）、管理 2FA 啟用/停用（含 QR Code 掃描流程）；所有操作對應 Rails API 端點。
+- **新增使用者訂單歷史紀錄頁**：使用者可在 `/orders` 查看自己的訂閱訂單列表（含方案、金額、狀態、到期日）、免費試用剩餘次數、有效訂閱到期日，並可在線取消 confirmed 狀態訂單。
+- **新增視訊通話大廳頁面**：`/lobby` 為 Zoom/Google Meet 風格的通話起點頁面；含本地相機預覽、麥克風/攝影機靜音切換、裝置選擇器（DeviceSelector）、好友在線狀態選取並發起通話；`/` 根路由重導至 `/lobby`。
 - **新增裝置選擇器**：前端提供音訊/視訊輸入裝置選單，使用 `enumerateDevices()` 列舉所有裝置並支援以 `deviceId` 指定特定錄音介面通道。
 - **新增音訊處理管線**：取得音訊串流後強制關閉 `echoCancellation`、`noiseSuppression`、`autoGainControl`；掛載 `GainNode`（放大 5 倍）與 `ChannelSplitter/Merger` 解決單聲道錄音介面輸入問題，確保雙聲道輸出均勻。
 - **新增 SDP 優化**：Go 伺服器攔截並修改 SDP，強制音軌使用 Opus 128kbps 雙聲道（`useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=128000;minptime=10`）。
@@ -35,7 +39,11 @@
 - `friend-system`: 好友關係資料模型與 API，含好友邀請、接受/拒絕、解除好友操作
 - `realtime-presence`: 以 ActionCable (Solid Cable) 實作的即時上線狀態廣播與視訊邀請推播通知
 - `webrtc-media-server`: Go + Pion 媒體伺服器，負責 WebRTC 信令交換（offer/answer/ICE）、SDP 攔截修改與 RTP 封包直通轉發（SFU，不解碼）
-- `frontend-routing`: React SPA 路由層，以 `react-router-dom` 建立 `<BrowserRouter>`，各功能頁面（好友列表、通話頁）對應獨立 URL，可直接透過瀏覽器導覽
+- `frontend-routing`: React SPA 路由層，以 `react-router-dom` 建立 `<BrowserRouter>`，各功能頁面（大廳、好友列表、訂單、個人資料、通話頁）對應獨立 URL，可直接透過瀏覽器導覽
+- `frontend-shell`: 全站 Layout 與 Nav Bar，使用 DaisyUI 套版；dark/light mode 切換（localStorage 持久化 + `data-theme` attribute）；Nav Bar 含好友、訂單、大廳、個人資訊下拉連結
+- `user-profile`: 使用者自助帳號管理頁（`/profile`），含修改 display_name、變更密碼、申請修改 email（驗證信流程）、2FA 啟用/停用管理
+- `user-orders`: 使用者前台訂單歷史紀錄頁（`/orders`），含訂閱列表、試用次數顯示、取消訂閱操作
+- `call-lobby`: 視訊通話大廳頁面（`/lobby`），Zoom/Meet 風格；含本地相機預覽、裝置選擇、好友在線選取、發起通話入口
 - `device-selector`: React 前端裝置選擇 UI，使用 `navigator.mediaDevices.enumerateDevices()` 列舉並允許選取特定 `deviceId`
 - `audio-pipeline`: React 前端音訊前處理管線，包含停用瀏覽器 DSP 處理、`GainNode` 前級增益（5x）、`ChannelSplitter/Merger` 雙聲道處理
 - `google-oauth`: 以 `omniauth-google-oauth2` 整合 Devise omniauthable，允許使用者透過 Google 帳號登入；`users` 表新增 `provider`、`uid` 欄位
@@ -47,7 +55,7 @@
 
 ## Impact
 
-- Affected specs: `admin-panel`, `subscription-system`, `friend-system`, `realtime-presence`, `webrtc-media-server`, `device-selector`, `audio-pipeline`, `google-oauth`, `two-factor-auth`
+- Affected specs: `admin-panel`, `subscription-system`, `friend-system`, `realtime-presence`, `webrtc-media-server`, `device-selector`, `audio-pipeline`, `google-oauth`, `two-factor-auth`, `frontend-shell`, `user-profile`, `user-orders`, `call-lobby`
 - Affected code:
   - `app/models/` — User, Friendship, Order 模型
   - `app/controllers/admin/` — 後台管理控制器
@@ -68,3 +76,9 @@
   - `config/cable.yml` — Solid Cable 設定
   - `config/initializers/devise.rb` — Devise OmniAuth 設定
   - `Gemfile` — 新增 `omniauth-google-oauth2`、`omniauth-rails_csrf_protection`、`devise-two-factor`、`rotp`、`rqrcode`
+  - `frontend/src/components/Layout/AppLayout.tsx` — 全站 Layout + Nav Bar
+  - `frontend/src/pages/LobbyPage.tsx` — 通話大廳（route: /lobby）
+  - `frontend/src/pages/ProfilePage.tsx` — 個人資料管理（route: /profile）
+  - `frontend/src/pages/OrdersPage.tsx` — 訂單歷史（route: /orders）
+  - `app/controllers/api/profile_controller.rb` — 使用者帳號 API（display_name、密碼、email 修改）
+  - `frontend/package.json` — 新增 daisyui 依賴

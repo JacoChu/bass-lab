@@ -2,6 +2,23 @@ module Api
   class SessionsController < ApplicationController
     protect_from_forgery with: :null_session
 
+    # DELETE /api/sessions/:token
+    # Called by the Go media server when a session ends (both peers disconnected).
+    # Increments trial_sessions_used for the inviter if they have no active subscription.
+    def destroy
+      payload = decode_token(params[:id])
+      unless payload
+        return render json: { error: "Invalid session token" }, status: :unprocessable_entity
+      end
+
+      inviter = User.find_by(id: payload["inviter_id"])
+      if inviter && !inviter.active_subscription?
+        inviter.increment!(:trial_sessions_used)
+      end
+
+      render json: { message: "Session ended." }
+    end
+
     # GET /api/sessions/validate?token=...
     # Called by the Go media server to verify session tokens.
     # No user auth required — Go server calls this internally.

@@ -32,7 +32,8 @@ type signalMsg struct {
 // Tasks 6.1–6.4, 6.6, 6.7.
 func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
-	if token == "" || !validateToken(token) {
+	valid, trial := validateToken(token)
+	if token == "" || !valid {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			http.Error(w, "upgrade failed", http.StatusBadRequest)
@@ -51,9 +52,9 @@ func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	c := &client{send: make(chan []byte, 32)}
+	c := &client{send: make(chan []byte, 32), conn: conn}
 
-	if joinErr := sessions.join(token, c); joinErr == errSessionFull {
+	if joinErr := sessions.join(token, c, trial); joinErr == errSessionFull {
 		_ = conn.WriteMessage(websocket.CloseMessage,
 			websocket.FormatCloseMessage(4003, "Session full"))
 		return
@@ -154,23 +155,28 @@ func relay(peer *client, msg []byte) {
 }
 
 // validateToken calls Rails GET /api/sessions/validate?token=<token> (task 6.1).
-func validateToken(token string) bool {
+// Returns (valid, trial) — trial is true when the inviter has no active subscription.
+func validateToken(token string) (bool, bool) {
+	if token == "" {
+		return false, false
+	}
 	url := fmt.Sprintf("%s/api/sessions/validate?token=%s", railsBaseURL, token)
 	resp, err := http.Get(url) //nolint:gosec
 	if err != nil {
 		log.Printf("token validation request failed: %v", err)
-		return false
+		return false, false
 	}
 	defer resp.Body.Close()
 
 	var result struct {
 		Valid bool `json:"valid"`
+		Trial bool `json:"trial"`
 	}
 	body, _ := io.ReadAll(resp.Body)
 	if jsonErr := json.Unmarshal(body, &result); jsonErr != nil {
-		return false
+		return false, false
 	}
-	return result.Valid
+	return result.Valid, result.Trial
 }
 
 // newPeerConnection creates a WebRTC PeerConnection with VP8 + Opus codecs only.

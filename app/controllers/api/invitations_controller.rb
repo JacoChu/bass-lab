@@ -4,6 +4,10 @@ module Api
 
     # POST /api/invitations
     def create
+      unless current_user.session_eligible?
+        return render_error("No active subscription. Please subscribe to continue.", :forbidden)
+      end
+
       invitee = User.find_by(id: params[:invitee_id])
       return render_error("User not found", :not_found) unless invitee
       return render_error("Cannot invite yourself", :unprocessable_entity) if invitee.id == current_user.id

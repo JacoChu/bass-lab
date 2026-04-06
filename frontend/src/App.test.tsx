@@ -1,22 +1,30 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
 import App from './App'
 
-// Stub heavy page dependencies so App routing can be tested in isolation.
+// Stub all page components and AppLayout so App routing can be tested in isolation.
+vi.mock('./components/Layout/AppLayout', () => ({
+  default: () => {
+    const { Outlet } = require('react-router-dom')
+    return <div data-testid="app-layout"><Outlet /></div>
+  },
+}))
 vi.mock('./pages/FriendsPage', () => ({
   default: () => <div data-testid="friends-page">FriendsPage</div>,
 }))
 vi.mock('./pages/CallPage', () => ({
   default: () => <div data-testid="call-page">CallPage</div>,
 }))
+vi.mock('./pages/LobbyPage', () => ({
+  default: () => <div data-testid="lobby-page">LobbyPage</div>,
+}))
+vi.mock('./pages/OrdersPage', () => ({
+  default: () => <div data-testid="orders-page">OrdersPage</div>,
+}))
+vi.mock('./pages/ProfilePage', () => ({
+  default: () => <div data-testid="profile-page">ProfilePage</div>,
+}))
 
-// App uses BrowserRouter internally; we override history via window.location for test purposes.
-// Simpler: render App wrapping nothing and check the path redirects to /friends.
-
-test('/ redirects to /friends route', () => {
-  // Use MemoryRouter externally to control initial path.
-  // App exports inner routes for testability — or we just check the DOM.
-  // Since App contains BrowserRouter itself, render it and verify the friend page stub shows.
+test('/ redirects to /lobby route', () => {
   render(<App />)
-  expect(screen.getByTestId('friends-page')).toBeInTheDocument()
+  expect(screen.getByTestId('lobby-page')).toBeInTheDocument()
 })
