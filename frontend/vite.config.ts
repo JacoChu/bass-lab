@@ -12,4 +12,9 @@ export default defineConfig({
       '/cable': { target: 'ws://localhost:3000', ws: true },
     },
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/test-setup.ts'],
+  },
 })
