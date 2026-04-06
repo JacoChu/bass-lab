@@ -11,3 +11,4 @@ openspec/.vector-search.db*
 /tmp/cache/
 /tmp/pids/
 /tmp/sockets/
+.claude/settings.local.json
