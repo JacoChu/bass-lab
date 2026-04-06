@@ -66,13 +66,14 @@
 - [x] 8.3 確認 `ChannelSplitterNode.output[0]`（左聲道）同時連至 `ChannelMergerNode.input[0]` 與 `input[1]`，實作 mono-to-stereo channel mapping via ChannelSplitter/Merger
 - [x] 8.4 在 hook 的 cleanup 函數中呼叫 `audioContext.close()` 並對所有 track 呼叫 `.stop()`，實作 audio pipeline teardown on disconnect
 
-## 9. 前端 - 通話介面
+## 9. 前端 - 路由設定與通話介面
 
-- [x] 9.1 建立好友列表頁面，訂閱 `PresenceChannel`，接收 `{ user_id, status }` 廣播後即時更新好友在線/離線狀態圖示
-- [x] 9.2 訂閱 `InvitationChannel`，接收視訊邀請 `{ from_user_id, from_display_name, session_token }` 後顯示邀請彈窗（接受/拒絕）
-- [x] 9.3 實作「發起通話」流程：呼叫 `POST /api/invitations`，取得 `session_token` 後開始等待對方接受，超過 120 秒未接受時顯示「邀請已過期」
-- [x] 9.4 實作通話頁面：接受邀請後呼叫 `POST /api/invitations/:token/accept` 取得 Go 伺服器 URL，使用 `useAudioPipeline` 取得處理後的音訊 track，建立 `RTCPeerConnection` 連線 Go 伺服器，傳送 offer、接收 answer，完成影音連線
-- [x] 9.5 在通話頁面嵌入 `DeviceSelector`，允許使用者在通話前選擇裝置；通話結束時觸發 audio pipeline teardown
+- [x] 9.0 安裝 `react-router-dom`（`npm install react-router-dom`）；將 `frontend/src/App.tsx` 從 Vite 預設範本完全替換為 `<BrowserRouter>` + `<Routes>` 設定：`/` → 重導至 `/friends`、`/friends` → `<FriendsPage>`、`/call/:token` → `<CallPage>`；確認開啟 `http://localhost:5173/friends` 可見好友列表頁（非空白頁）
+- [x] 9.1 將 `frontend/src/pages/FriendList.tsx`（若已存在則重命名為 `FriendsPage.tsx`）改造成完整可瀏覽的好友列表頁面（route: `/friends`）：頁面標題「Friends」、呼叫 `GET /api/friends` 顯示好友卡片列表（display_name、online badge）、訂閱 `PresenceChannel`，接收 `{ user_id, status }` 廣播後即時更新好友在線/離線狀態圖示；首次載入時呼叫 `GET /api/friends` 取得所有好友；每個好友卡片顯示 display_name 與綠/灰圓點表示在線狀態
+- [x] 9.2 在 `FriendsPage` 訂閱 `InvitationChannel`，接收視訊邀請 `{ from_user_id, from_display_name, session_token }` 後顯示邀請彈窗（含接受/拒絕按鈕）；接受後呼叫 `POST /api/invitations/:token/accept` 取得 Go 伺服器 URL，以 `react-router-dom` 的 `useNavigate` 導向 `/call/:token`；拒絕則關閉彈窗
+- [x] 9.3 在 `FriendsPage` 為每個在線好友卡片加入「發起通話」按鈕：點擊後呼叫 `POST /api/invitations`（body: `{ invitee_id }`），取得 `session_token` 後顯示「等待對方接受…」狀態（可含取消按鈕）；超過 120 秒未接受或使用者取消時清除等待狀態並顯示「邀請已過期」；成功對方接受後，前端透過 `InvitationChannel` 收到接受訊息，以 `useNavigate` 導向 `/call/:token`
+- [x] 9.4 建立 `frontend/src/pages/CallPage.tsx` 作為完整可瀏覽的通話頁面（route: `/call/:token`）：從 URL param 取得 `token`，呼叫 `POST /api/invitations/:token/accept` 取得 Go 伺服器 WebSocket URL；使用 `useAudioPipeline` 取得處理後的音訊 track，建立 `RTCPeerConnection` 連線 Go 伺服器，透過 WebSocket 交換 offer/answer/ICE candidate，完成影音連線；頁面顯示連線狀態（Connecting… / Connected / Disconnected）、本地與遠端 `<video>` 元素、以及結束通話按鈕
+- [x] 9.5 在 `CallPage` 嵌入 `DeviceSelector` 元件，允許使用者在通話前選擇音訊/視訊裝置；點擊結束通話按鈕時呼叫 audio pipeline teardown（`useAudioPipeline` cleanup）並關閉 `RTCPeerConnection`，之後以 `useNavigate` 導回 `/friends`
 
 ## 10. Google OAuth 登入
 

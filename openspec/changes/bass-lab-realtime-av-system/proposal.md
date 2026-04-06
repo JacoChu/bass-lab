@@ -12,6 +12,7 @@
 - **新增好友系統**：使用者可互相加好友、管理好友關係，並在好友列表查看即時上線狀態。
 - **新增即時通知機制**：透過 ActionCable (Solid Cable) 推播「好友上線/離線」狀態更新與「視訊邀請」通知。
 - **新增 Go 媒體伺服器**：以 Go + Pion 實作 WebRTC 信令交換與 SFU 媒體轉發，接收 RTP 封包後不解碼、直接轉發，確保最低處理延遲。
+- **新增前端 SPA 路由**：以 `react-router-dom` 建立 React SPA 頁面路由結構；`App.tsx` 替換 Vite 預設範本，設定 `<BrowserRouter>` + `<Routes>`；各功能均為獨立可瀏覽頁面，路由對應：`/friends`（好友列表頁）、`/call/:token`（通話頁）；每個頁面可直接透過瀏覽器 URL 存取，不再只是元件檔案。
 - **新增裝置選擇器**：前端提供音訊/視訊輸入裝置選單，使用 `enumerateDevices()` 列舉所有裝置並支援以 `deviceId` 指定特定錄音介面通道。
 - **新增音訊處理管線**：取得音訊串流後強制關閉 `echoCancellation`、`noiseSuppression`、`autoGainControl`；掛載 `GainNode`（放大 5 倍）與 `ChannelSplitter/Merger` 解決單聲道錄音介面輸入問題，確保雙聲道輸出均勻。
 - **新增 SDP 優化**：Go 伺服器攔截並修改 SDP，強制音軌使用 Opus 128kbps 雙聲道（`useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=128000;minptime=10`）。
@@ -34,6 +35,7 @@
 - `friend-system`: 好友關係資料模型與 API，含好友邀請、接受/拒絕、解除好友操作
 - `realtime-presence`: 以 ActionCable (Solid Cable) 實作的即時上線狀態廣播與視訊邀請推播通知
 - `webrtc-media-server`: Go + Pion 媒體伺服器，負責 WebRTC 信令交換（offer/answer/ICE）、SDP 攔截修改與 RTP 封包直通轉發（SFU，不解碼）
+- `frontend-routing`: React SPA 路由層，以 `react-router-dom` 建立 `<BrowserRouter>`，各功能頁面（好友列表、通話頁）對應獨立 URL，可直接透過瀏覽器導覽
 - `device-selector`: React 前端裝置選擇 UI，使用 `navigator.mediaDevices.enumerateDevices()` 列舉並允許選取特定 `deviceId`
 - `audio-pipeline`: React 前端音訊前處理管線，包含停用瀏覽器 DSP 處理、`GainNode` 前級增益（5x）、`ChannelSplitter/Merger` 雙聲道處理
 - `google-oauth`: 以 `omniauth-google-oauth2` 整合 Devise omniauthable，允許使用者透過 Google 帳號登入；`users` 表新增 `provider`、`uid` 欄位
@@ -51,9 +53,12 @@
   - `app/controllers/admin/` — 後台管理控制器
   - `app/controllers/users/` — OmniauthCallbacksController（Google OAuth callback）
   - `app/channels/` — ActionCable channel（PresenceChannel, InvitationChannel）
-  - `app/javascript/` — React SPA 主要前端程式碼
-  - `app/javascript/components/DeviceSelector/` — 裝置選擇器元件
-  - `app/javascript/hooks/useAudioPipeline.ts` — 音訊管線 hook
+  - `frontend/src/App.tsx` — React SPA 路由入口（BrowserRouter + Routes）
+  - `frontend/src/pages/FriendsPage.tsx` — 好友列表頁（route: /friends）
+  - `frontend/src/pages/CallPage.tsx` — 通話頁（route: /call/:token）
+  - `frontend/src/components/DeviceSelector/` — 裝置選擇器元件
+  - `frontend/src/hooks/useAudioPipeline.ts` — 音訊管線 hook
+  - `frontend/package.json` — 新增 react-router-dom 依賴
   - `media-server/` — Go 媒體伺服器（獨立服務）
   - `media-server/signaling/` — WebRTC 信令處理
   - `media-server/sfu/` — SFU RTP 轉發邏輯
