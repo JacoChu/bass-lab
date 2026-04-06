@@ -28,6 +28,15 @@ gem "solid_cache"
 # Authentication for admin users
 gem "devise"
 
+# Google OAuth
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
+
+# Two-factor authentication (TOTP)
+gem "devise-two-factor"
+gem "rotp"
+gem "rqrcode"
+
 # JSON builder
 gem "jbuilder"
 

@@ -25,7 +25,7 @@
 - [x] 3.4 實作 Order management 與 Admin subscription management（admin-panel spec、subscription-system spec）：建立 `Orders` Administrate dashboard（`app/dashboards/order_dashboard.rb`），顯示欄位含 `id`、`user_id`、`status`、`period`、`amount_cents`、`expires_at`、`created_at`；支援依 `status` 與 `created_at` 日期範圍篩選；`super_admin` 可編輯 `status`、`period`、`expires_at`（即取消或延長任意用戶訂閱）
 - [x] 3.5 修正 `UserDashboard` 表單欄位（admin-panel spec）：移除自動生成的 `encrypted_password`、`orders`、`received_friendships`、`sent_friendships`、`remember_created_at`、`reset_password_sent_at`、`reset_password_token`；改用 Devise virtual attribute `password`、`password_confirmation`；`FORM_ATTRIBUTES = %i[email display_name role password password_confirmation]`；`Admin::UsersController#permitted_attributes` create 允許 `[:email, :display_name, :role, :password, :password_confirmation]`，update 只允許 `[:display_name, :role]`
 - [x] 3.6 實作 User detail view with friends and orders（admin-panel spec）：在 `User` model 新增 `def accepted_friends` 返回雙向 accepted friendships 的對方 User 物件（`Friendship.where("(user_id = ? OR friend_id = ?) AND status = ?", id, id, :accepted).map { |f| f.user_id == id ? f.friend : f.user }`）；更新 `UserDashboard` ATTRIBUTE_TYPES 加入 `orders: Field::HasMany`、`accepted_friends: Field::HasMany`；更新 `SHOW_PAGE_ATTRIBUTES` 加入 `orders`、`accepted_friends`；更新 `COLLECTION_ATTRIBUTES` 加入顯示好友數的欄位（以 `accepted_friends` count 呈現）
-- [ ] 3.7 實作 Admin creates subscription for user（admin-panel spec）：（1）在 `UserDashboard` show 頁面覆寫 Administrate 部分視圖 `app/views/admin/users/_collection_header_actions.html.erb`，加入「New Subscription」按鈕，連結為 `new_admin_order_path(user_id: resource.id)`；（2）在 `Admin::OrdersController` 覆寫 `new` action：`@order = Order.new(user_id: params[:user_id], status: :confirmed)`；（3）在 `OrderDashboard` 新增 `NEW_PAGE_ATTRIBUTES = %i[user_id period amount_cents expires_at]`，`user_id` 使用 `Field::BelongsTo` 且於 new 表單中以 hidden field 送出、顯示為 read-only 文字；（4）`Order` model 已有 `validates :expires_at, presence: true, if: :confirmed?`，確認覆蓋新建路徑；（5）成功建立後 Administrate 預設 redirect 至 `/admin/orders/:id`
+- [x] 3.7 實作 Admin creates subscription for user（admin-panel spec）：（1）在 `UserDashboard` show 頁面覆寫 Administrate 部分視圖 `app/views/admin/users/_collection_header_actions.html.erb`，加入「New Subscription」按鈕，連結為 `new_admin_order_path(user_id: resource.id)`；（2）在 `Admin::OrdersController` 覆寫 `new` action：`@order = Order.new(user_id: params[:user_id], status: :confirmed)`；（3）在 `OrderDashboard` 新增 `NEW_PAGE_ATTRIBUTES = %i[user_id period amount_cents expires_at]`，`user_id` 使用 `Field::BelongsTo` 且於 new 表單中以 hidden field 送出、顯示為 read-only 文字；（4）`Order` model 已有 `validates :expires_at, presence: true, if: :confirmed?`，確認覆蓋新建路徑；（5）成功建立後 Administrate 預設 redirect 至 `/admin/orders/:id`
 
 ## 4. 好友系統 API
 
@@ -45,42 +45,42 @@
 
 ## 6. Go 媒體伺服器
 
-- [ ] 6.1 實作 Go WebSocket 端點 `/ws/signal`，實作 WebRTC signaling over WebSocket：從 query param 取得 `session_token` 並向 Rails HTTP API 驗證（`GET /api/sessions/validate?token=...`）；無效 token 以 close code 4001 關閉連線（呼應設計決策：Rails 與 Go 的通訊方式：HTTP REST，不共享資料庫）
-- [ ] 6.2 實作 session 管理記憶體結構（`map[string]*Session`），含 session creation、第二 client 加入、第三 client 以 close code 4003 拒絕；實作 session management
-- [ ] 6.3 實作 ICE candidate 中繼：解析 `{ "type": "candidate", "candidate": "..." }` 訊息並轉發給對端
-- [ ] 6.4 實作 SDP offer/answer exchange 中繼：接收 offer/answer 並在 forwarding answer 前呼叫 SDP 修改邏輯；呼應設計決策：SDP 修改位置：Go 伺服器攔截，不在前端修改
-- [ ] 6.5 實作 `media-server/sdp/` 套件：解析 SDP 文字，強制 Opus `a=fmtp` 包含 `useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=128000;minptime=10`，移除非 VP8 的 video codec；實作 SDP offer/answer exchange 的修改邏輯
-- [ ] 6.6 實作 SFU RTP 直通轉發：`media-server/sfu/` 套件讀取 `pion/webrtc` 的 `OnTrack` 事件，直接將收到的 RTP 封包寫入對端的 `TrackLocalStaticRTP`，不解碼；實作 RTP forwarding (SFU passthrough) 呼應設計決策：SFU 架構：不轉碼，直通 RTP 封包
-- [ ] 6.7 實作 session 結束清理：任一端 WebSocket 或 RTP 連線關閉時，關閉雙方 `PeerConnection` 並從記憶體移除 session
+- [x] 6.1 實作 Go WebSocket 端點 `/ws/signal`，實作 WebRTC signaling over WebSocket：從 query param 取得 `session_token` 並向 Rails HTTP API 驗證（`GET /api/sessions/validate?token=...`）；無效 token 以 close code 4001 關閉連線（呼應設計決策：Rails 與 Go 的通訊方式：HTTP REST，不共享資料庫）
+- [x] 6.2 實作 session 管理記憶體結構（`map[string]*Session`），含 session creation、第二 client 加入、第三 client 以 close code 4003 拒絕；實作 session management
+- [x] 6.3 實作 ICE candidate 中繼：解析 `{ "type": "candidate", "candidate": "..." }` 訊息並轉發給對端
+- [x] 6.4 實作 SDP offer/answer exchange 中繼：接收 offer/answer 並在 forwarding answer 前呼叫 SDP 修改邏輯；呼應設計決策：SDP 修改位置：Go 伺服器攔截，不在前端修改
+- [x] 6.5 實作 `media-server/sdp/` 套件：解析 SDP 文字，強制 Opus `a=fmtp` 包含 `useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=128000;minptime=10`，移除非 VP8 的 video codec；實作 SDP offer/answer exchange 的修改邏輯
+- [x] 6.6 實作 SFU RTP 直通轉發：`media-server/sfu/` 套件讀取 `pion/webrtc` 的 `OnTrack` 事件，直接將收到的 RTP 封包寫入對端的 `TrackLocalStaticRTP`，不解碼；實作 RTP forwarding (SFU passthrough) 呼應設計決策：SFU 架構：不轉碼，直通 RTP 封包
+- [x] 6.7 實作 session 結束清理：任一端 WebSocket 或 RTP 連線關閉時，關閉雙方 `PeerConnection` 並從記憶體移除 session
 
 ## 7. 前端 - 裝置選擇器
 
-- [ ] 7.1 建立 `DeviceSelector` React 元件，在 mount 時呼叫 `navigator.mediaDevices.enumerateDevices()`，依 `audioinput`/`videoinput` kind 分別渲染兩個 `<select>` 下拉選單；label 為空時顯示 "Microphone N" / "Camera N"（1-based index），實作 enumerate available media devices
-- [ ] 7.2 監聽 `navigator.mediaDevices.addEventListener('devicechange', ...)` 與 `getUserMedia` 權限授予後自動重新呼叫 `enumerateDevices()` 刷新清單
-- [ ] 7.3 實作使用者選取後將 `selectedAudioDeviceId` 與 `selectedVideoDeviceId` 存入 state；呼叫 `getUserMedia` 時使用 `{ deviceId: { exact: ... } }`；`OverconstrainedError` 時顯示 "Selected device is no longer available. Please choose another."，實作 select specific audio input device by deviceId 與 select specific video input device by deviceId
+- [x] 7.1 建立 `DeviceSelector` React 元件，在 mount 時呼叫 `navigator.mediaDevices.enumerateDevices()`，依 `audioinput`/`videoinput` kind 分別渲染兩個 `<select>` 下拉選單；label 為空時顯示 "Microphone N" / "Camera N"（1-based index），實作 enumerate available media devices
+- [x] 7.2 監聽 `navigator.mediaDevices.addEventListener('devicechange', ...)` 與 `getUserMedia` 權限授予後自動重新呼叫 `enumerateDevices()` 刷新清單
+- [x] 7.3 實作使用者選取後將 `selectedAudioDeviceId` 與 `selectedVideoDeviceId` 存入 state；呼叫 `getUserMedia` 時使用 `{ deviceId: { exact: ... } }`；`OverconstrainedError` 時顯示 "Selected device is no longer available. Please choose another."，實作 select specific audio input device by deviceId 與 select specific video input device by deviceId
 
 ## 8. 前端 - 音訊管線
 
-- [ ] 8.1 建立 `useAudioPipeline` hook，呼叫 `getUserMedia` 時設定 `echoCancellation: false, noiseSuppression: false, autoGainControl: false`；瀏覽器不支援時 `console.warn("DSP constraint not honored by browser")` 繼續執行，實作 disable browser DSP processing on getUserMedia
-- [ ] 8.2 在 hook 內建立 Web Audio API 處理圖（呼應設計決策：音訊管線：Web Audio API GainNode + ChannelSplitter/Merger）：`MediaStreamSourceNode → GainNode(gain=5) → ChannelSplitterNode(2) → [output[0]→merger input[0], output[0]→merger input[1]] → ChannelMergerNode(2) → MediaStreamDestinationNode`，實作 pre-amp gain via GainNode (5x)
-- [ ] 8.3 確認 `ChannelSplitterNode.output[0]`（左聲道）同時連至 `ChannelMergerNode.input[0]` 與 `input[1]`，實作 mono-to-stereo channel mapping via ChannelSplitter/Merger
-- [ ] 8.4 在 hook 的 cleanup 函數中呼叫 `audioContext.close()` 並對所有 track 呼叫 `.stop()`，實作 audio pipeline teardown on disconnect
+- [x] 8.1 建立 `useAudioPipeline` hook，呼叫 `getUserMedia` 時設定 `echoCancellation: false, noiseSuppression: false, autoGainControl: false`；瀏覽器不支援時 `console.warn("DSP constraint not honored by browser")` 繼續執行，實作 disable browser DSP processing on getUserMedia
+- [x] 8.2 在 hook 內建立 Web Audio API 處理圖（呼應設計決策：音訊管線：Web Audio API GainNode + ChannelSplitter/Merger）：`MediaStreamSourceNode → GainNode(gain=5) → ChannelSplitterNode(2) → [output[0]→merger input[0], output[0]→merger input[1]] → ChannelMergerNode(2) → MediaStreamDestinationNode`，實作 pre-amp gain via GainNode (5x)
+- [x] 8.3 確認 `ChannelSplitterNode.output[0]`（左聲道）同時連至 `ChannelMergerNode.input[0]` 與 `input[1]`，實作 mono-to-stereo channel mapping via ChannelSplitter/Merger
+- [x] 8.4 在 hook 的 cleanup 函數中呼叫 `audioContext.close()` 並對所有 track 呼叫 `.stop()`，實作 audio pipeline teardown on disconnect
 
 ## 9. 前端 - 通話介面
 
-- [ ] 9.1 建立好友列表頁面，訂閱 `PresenceChannel`，接收 `{ user_id, status }` 廣播後即時更新好友在線/離線狀態圖示
-- [ ] 9.2 訂閱 `InvitationChannel`，接收視訊邀請 `{ from_user_id, from_display_name, session_token }` 後顯示邀請彈窗（接受/拒絕）
-- [ ] 9.3 實作「發起通話」流程：呼叫 `POST /api/invitations`，取得 `session_token` 後開始等待對方接受，超過 120 秒未接受時顯示「邀請已過期」
-- [ ] 9.4 實作通話頁面：接受邀請後呼叫 `POST /api/invitations/:token/accept` 取得 Go 伺服器 URL，使用 `useAudioPipeline` 取得處理後的音訊 track，建立 `RTCPeerConnection` 連線 Go 伺服器，傳送 offer、接收 answer，完成影音連線
-- [ ] 9.5 在通話頁面嵌入 `DeviceSelector`，允許使用者在通話前選擇裝置；通話結束時觸發 audio pipeline teardown
+- [x] 9.1 建立好友列表頁面，訂閱 `PresenceChannel`，接收 `{ user_id, status }` 廣播後即時更新好友在線/離線狀態圖示
+- [x] 9.2 訂閱 `InvitationChannel`，接收視訊邀請 `{ from_user_id, from_display_name, session_token }` 後顯示邀請彈窗（接受/拒絕）
+- [x] 9.3 實作「發起通話」流程：呼叫 `POST /api/invitations`，取得 `session_token` 後開始等待對方接受，超過 120 秒未接受時顯示「邀請已過期」
+- [x] 9.4 實作通話頁面：接受邀請後呼叫 `POST /api/invitations/:token/accept` 取得 Go 伺服器 URL，使用 `useAudioPipeline` 取得處理後的音訊 track，建立 `RTCPeerConnection` 連線 Go 伺服器，傳送 offer、接收 answer，完成影音連線
+- [x] 9.5 在通話頁面嵌入 `DeviceSelector`，允許使用者在通話前選擇裝置；通話結束時觸發 audio pipeline teardown
 
 ## 10. Google OAuth 登入
 
-- [ ] 10.1 實作 Google OAuth login（google-oauth spec）：在 `Gemfile` 新增 `omniauth-google-oauth2`、`omniauth-rails_csrf_protection` 並執行 `bundle install`；在 `config/initializers/devise.rb` 加入 `config.omniauth :google_oauth2, ENV["GOOGLE_CLIENT_ID"], ENV["GOOGLE_CLIENT_SECRET"]`
-- [ ] 10.2 建立 `db/migrate` 新增 `users.provider`（string）與 `users.uid`（string）欄位的 migration，執行 `rails db:migrate`；在 `User` model 加入 `devise :omniauthable, omniauth_providers: [:google_oauth2]`
-- [ ] 10.3 建立 `app/controllers/users/omniauth_callbacks_controller.rb`：實作 `google_oauth2` action，以 `provider` + `uid` 查找既有使用者；不存在則以 Google 資料（email, name）建立新使用者（`display_name` 取自 `info.name`，`password` 以 `Devise.friendly_token` 填入）；sign_in 後導向 root；建立失敗導向 `new_user_registration_url`
-- [ ] 10.4 在 `config/routes.rb` 設定 `devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }`；確認 `GET /users/auth/google_oauth2` 與 `GET /users/auth/google_oauth2/callback` 路由存在
-- [ ] 10.5 實作 email 衝突合併邏輯：若 Google OAuth 返回的 email 已對應到 `provider` 為 nil 的使用者，則更新該使用者的 `provider` 與 `uid` 並 sign_in，不建立重複帳號
+- [x] 10.1 實作 Google OAuth login（google-oauth spec）：在 `Gemfile` 新增 `omniauth-google-oauth2`、`omniauth-rails_csrf_protection` 並執行 `bundle install`；在 `config/initializers/devise.rb` 加入 `config.omniauth :google_oauth2, ENV["GOOGLE_CLIENT_ID"], ENV["GOOGLE_CLIENT_SECRET"]`
+- [x] 10.2 建立 `db/migrate` 新增 `users.provider`（string）與 `users.uid`（string）欄位的 migration，執行 `rails db:migrate`；在 `User` model 加入 `devise :omniauthable, omniauth_providers: [:google_oauth2]`
+- [x] 10.3 建立 `app/controllers/users/omniauth_callbacks_controller.rb`：實作 `google_oauth2` action，以 `provider` + `uid` 查找既有使用者；不存在則以 Google 資料（email, name）建立新使用者（`display_name` 取自 `info.name`，`password` 以 `Devise.friendly_token` 填入）；sign_in 後導向 root；建立失敗導向 `new_user_registration_url`
+- [x] 10.4 在 `config/routes.rb` 設定 `devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }`；確認 `GET /users/auth/google_oauth2` 與 `GET /users/auth/google_oauth2/callback` 路由存在
+- [x] 10.5 實作 email 衝突合併邏輯：若 Google OAuth 返回的 email 已對應到 `provider` 為 nil 的使用者，則更新該使用者的 `provider` 與 `uid` 並 sign_in，不建立重複帳號
 
 ## 11. 二階段驗證（2FA）
 

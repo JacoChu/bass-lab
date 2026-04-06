@@ -1,6 +1,7 @@
 class User < ApplicationRecord
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  devise :database_authenticatable, :two_factor_authenticatable,
+         :registerable, :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
 
   enum :role, { user: 0, staff: 1, super_admin: 2 }
 
@@ -10,6 +11,26 @@ class User < ApplicationRecord
   has_many :orders, dependent: :destroy
 
   validates :display_name, presence: true
+
+  # Task 10.3 + 10.5 — find or create user from Google OAuth auth hash.
+  def self.from_omniauth(auth)
+    # Task 10.5 — link Google identity to existing password-based account.
+    user = find_by(provider: auth.provider, uid: auth.uid) ||
+           find_by(provider: nil, email: auth.info.email)
+
+    if user
+      user.update!(provider: auth.provider, uid: auth.uid)
+      return user
+    end
+
+    create!(
+      provider:     auth.provider,
+      uid:          auth.uid,
+      email:        auth.info.email,
+      display_name: auth.info.name,
+      password:     Devise.friendly_token
+    )
+  end
 
   def accepted_friends
     friend_ids = sent_friendships.accepted.pluck(:friend_id) +

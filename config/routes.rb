@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
 
   devise_scope :user do
     get    "/admin/sign_in",  to: "devise/sessions#new",     as: :new_admin_session
@@ -9,7 +9,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :users
-    resources :orders, only: %i[index show edit update]
+    resources :orders, only: %i[index show new create edit update]
     resources :admin_users, only: %i[index edit update]
 
     root to: "users#index"
