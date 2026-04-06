@@ -37,7 +37,10 @@
 <!-- Orders -->
 <div class="card bg-base-100 shadow border border-base-300 mb-6">
   <div class="card-body">
-    <h2 class="card-title text-base mb-4">訂單紀錄 (<%= @orders.count %>)</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="card-title text-base">訂單紀錄 (<%= @orders.count %>)</h2>
+      <%= link_to "＋ New Subscription", new_admin_order_path(user_id: @user.id), class: "btn btn-sm btn-primary" %>
+    </div>
     <% if @orders.any? %>
       <div class="overflow-x-auto">
         <table class="table table-sm">

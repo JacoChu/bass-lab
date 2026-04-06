@@ -15,6 +15,21 @@ module Admin
 
     def show; end
 
+    def new
+      @user = User.find(params[:user_id])
+      @order = Order.new(user_id: @user.id, status: :confirmed)
+    end
+
+    def create
+      @order = Order.new(create_params)
+      if @order.save
+        redirect_to admin_order_path(@order), notice: "訂閱已建立。"
+      else
+        @user = User.find_by(id: @order.user_id)
+        render :new, status: :unprocessable_entity
+      end
+    end
+
     def edit; end
 
     def update
@@ -29,6 +44,10 @@ module Admin
 
     def set_order
       @order = Order.find(params[:id])
+    end
+
+    def create_params
+      params.require(:order).permit(:user_id, :status, :period, :amount_cents, :expires_at)
     end
 
     def order_params

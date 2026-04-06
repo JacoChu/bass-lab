@@ -1,0 +1,54 @@
+<div class="flex items-center gap-3 mb-6">
+  <%= link_to "← 返回用戶", admin_user_path(@user), class: "btn btn-ghost btn-sm" %>
+  <h1 class="text-2xl font-bold">為用戶建立訂閱</h1>
+</div>
+
+<div class="card bg-base-100 shadow border border-base-300 max-w-lg">
+  <div class="card-body">
+    <p class="text-sm opacity-60 mb-4">
+      用戶：<strong><%= @user.email %></strong>（<%= @user.display_name %>）
+    </p>
+
+    <%= form_with model: [:admin, @order], class: "space-y-4" do |f| %>
+      <%= f.hidden_field :user_id %>
+      <%= f.hidden_field :status, value: "confirmed" %>
+
+      <% if @order.errors.any? %>
+        <div class="alert alert-error text-sm">
+          <ul class="list-disc list-inside">
+            <% @order.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-control">
+        <label class="label label-text font-medium">方案</label>
+        <%= f.select :period,
+              [["monthly", "monthly"], ["yearly", "yearly"]],
+              { selected: @order.period || "monthly" },
+              class: "select select-bordered w-full" %>
+      </div>
+
+      <div class="form-control">
+        <label class="label label-text font-medium">金額（分）</label>
+        <%= f.number_field :amount_cents,
+              value: @order.amount_cents,
+              min: 0,
+              class: "input input-bordered w-full",
+              placeholder: "例：99000 = $990" %>
+      </div>
+
+      <div class="form-control">
+        <label class="label label-text font-medium">到期日 <span class="text-error">*</span></label>
+        <%= f.datetime_local_field :expires_at,
+              value: @order.expires_at&.strftime("%Y-%m-%dT%H:%M"),
+              class: "input input-bordered w-full" %>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <%= f.submit "建立訂閱", class: "btn btn-primary" %>
+        <%= link_to "取消", admin_user_path(@user), class: "btn btn-ghost" %>
+      </div>
+    <% end %>
+  </div>
+</div>
