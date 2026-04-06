@@ -1,5 +1,18 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_for :users, controllers: {
+    omniauth_callbacks: "users/omniauth_callbacks",
+    sessions: "users/sessions"
+  }
+
+  # Two-factor authentication management
+  scope "/users" do
+    get    "two_factor/setup",   to: "users/two_factor#setup",   as: :two_factor_setup
+    post   "two_factor/enable",  to: "users/two_factor#enable",  as: :two_factor_enable
+    delete "two_factor",         to: "users/two_factor#disable", as: :two_factor_disable
+  end
+
+  # OTP verification step after primary credential check
+  post "/users/sessions/verify_otp", to: "users/sessions#verify_otp", as: :users_verify_otp
 
   devise_scope :user do
     get    "/admin/sign_in",  to: "devise/sessions#new",     as: :new_admin_session

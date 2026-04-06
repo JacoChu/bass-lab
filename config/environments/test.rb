@@ -61,4 +61,9 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # ActiveRecord::Encryption keys for test environment (devise-two-factor v6 requires these).
+  config.active_record.encryption.primary_key        = "test-ar-encryption-primary-key-32b"
+  config.active_record.encryption.deterministic_key  = "test-ar-deterministic-key-32bytes"
+  config.active_record.encryption.key_derivation_salt = "test-ar-key-derivation-salt-32byt"
 end
